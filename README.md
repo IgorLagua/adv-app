@@ -1,10 +1,10 @@
 ## Lembretes
 
 Para subir a aplicação entrar no linux até a pasta:
-cd projetos/advocacia/api
+cd projetos/advocacia/app
 
 - Executar o comando:
-
+npm run dev -- -o
 
 
 - Entrar no navegador
