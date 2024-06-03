@@ -1,0 +1,25 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^1.0.8",
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
+    "nuxt": "^3.10.0",
+    "vuetify-nuxt-module": "^0.10.3"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.5.1",
+    "@tinymce/tinymce-vue": "^5.1.1",
+    "maska": "^2.1.11"
+  },
+  "overrides": {
+    "vue": "latest"
+  }
+}
