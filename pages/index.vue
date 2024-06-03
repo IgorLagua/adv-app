@@ -1,5 +1,6 @@
 <template>
     <div>
+			
         <v-parallax
             src="/images/_5c8bbcfa-c42f-4185-9ce2-3c36cc1ea8a4.jpg"
             gradient="to top right, rgba(19,84,200,.6), rgba(128,255,199,.5)"

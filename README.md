@@ -4,7 +4,7 @@ Para subir a aplicação entrar no linux até a pasta:
 cd projetos/advocacia/api
 
 - Executar o comando:
-sail up -d
+
 
 
 - Entrar no navegador
