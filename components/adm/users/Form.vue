@@ -73,12 +73,6 @@ const isValid = ref(false);
 // Dados dos inputs com Validações --> vem da pasta composables/useDataUser
 const dataFieldsRequired = ref(userFieldsRequired());
 
-// users.formData = {
-//     email: "teste@teste.com",
-//     password: "password",
-//     name: "teste",
-// };
-
 async function saveButton() {
     if (isValid.value) {
         isLoading.value = true;
@@ -125,7 +119,7 @@ function clearForm() {
 function callSnackbar(subTitle) {
     snackbar.show = true;
     snackbar.title = users.formData.name;
-	snackbar.subTitle = subTitle;
+    snackbar.subTitle = subTitle;
     snackbar.color = "green";
     snackbar.timeout = 5000;
     snackbar.icon = "mdi-checkbox-marked-circle-outline";

@@ -1,10 +1,10 @@
 <template>
     <div>
         <AdmLayoutsMenuLoggedUser />
-        <AdmLayoutsMenuSelectTenants v-if="authentication.tenants.length > 1"/>
-		<v-divider></v-divider>
+        <AdmLayoutsMenuSelectTenants v-if="authentication.tenants.length > 1" />
+        <v-divider></v-divider>
 
-		<v-list density="compact">
+        <v-list density="compact">
             <v-list-subheader class="ml-n3">Super Admin</v-list-subheader>
 
             <v-list-item
@@ -14,16 +14,15 @@
                 color="orange-darken-3"
             ></v-list-item>
 
-			<v-list-item
+            <v-list-item
                 title="Permissões"
                 to="/adm/permissions"
                 rounded="lg"
                 color="orange-darken-3"
             ></v-list-item>
-
         </v-list>
-        
-		<v-list density="compact">
+
+        <v-list density="compact">
             <v-list-subheader class="ml-n3">Cadastros</v-list-subheader>
             <!-- <div v-if="route.path !== '/'">
             <v-list-item-media class="ma-3">
@@ -46,12 +45,12 @@
                 color="orange-darken-3"
             ></v-list-item> -->
 
-            <v-list-item
+            <!-- <v-list-item
                 title="Funcionários"
                 to="/adm/users"
                 rounded="lg"
                 color="orange-darken-3"
-            ></v-list-item>
+            ></v-list-item> -->
 
             <!-- <v-list-item 
             title="Clientes"
@@ -103,6 +102,7 @@ const authentication = useAuthenticationStore();
 const open = ref([]);
 
 const registrations = [
+    ["Funcionários", "/adm/users"],
     ["Clientes", "/adm/customers"],
     ["Empresas", "/adm/companies"],
     // [

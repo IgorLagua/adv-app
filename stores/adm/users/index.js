@@ -9,17 +9,18 @@ export const useUsersStore = defineStore('users', {
 		// fieldConfigOptional: [],
 
 		storeForm: false,
-        editForm: false,
-		
+		editForm: false,
+
 		formData: {},
 
 		totalItems: 0,
 
 		apiErrors: {},
-		
+
 		storeData: [],
+		storeUsers: [],
 		data: [],
-		
+
 
 	}),
 	getters,

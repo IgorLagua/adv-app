@@ -11,7 +11,7 @@
                 <v-text-field
                     v-model="search"
                     prepend-inner-icon="mdi-magnify"
-                    label="Localizar por Nome, E-mail ou CPF sem caracteres"
+                    label="Localizar por Nome ou E-mail"
                     flat
                     variant="solo-filled"
                 >
@@ -36,16 +36,13 @@
                 items-per-page-text="Itens por página:"
                 @update:options="loadItems"
             >
-                <template v-slot:item.phones="{ value }">
-                    <div v-for="(item, i) in value" :key="i">
-                        {{ item.number }}
-                    </div>
-                </template>
 
                 <template v-slot:item.actions="{ item }">
-
-                    <v-tooltip text="Editar autorização do funcionário" location="top">
-                         <template v-slot:activator="{ props }">
+                    <v-tooltip
+                        text="Editar autorização do funcionário"
+                        location="top"
+                    >
+                        <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"
                                 icon="mdi-account-details"
@@ -79,21 +76,20 @@
                             ></v-icon>
                         </template>
                     </v-tooltip>
-                    
                 </template>
             </v-data-table-server>
         </v-card>
 
         <AdmUsersForm
             v-if="openModalForm"
-			v-model="openModalForm"
+            v-model="openModalForm"
             :title="title"
         />
 
         <AdmUsersFormAuthorization
-			v-if="openModalAuthorization"
+            v-if="openModalAuthorization"
             v-model="openModalAuthorization"
-			:userData="userData"
+            :userData="userData"
         />
 
         <AdmCommonDialogDeleteItem
@@ -102,15 +98,6 @@
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
 
-        <AdmCommonSnackbar
-            v-if="showSnackbar"
-            v-model="showSnackbar"
-            :title="titleSnackbar"
-            :subTitle="subTitleSnackbar"
-            :color="colorSnackbar"
-            :timeout="4000"
-            :icon="iconSnackbar"
-        ></AdmCommonSnackbar>
     </div>
 </template>
 
@@ -118,25 +105,25 @@
 <script setup>
 import { useUsersStore } from "~/stores/adm/users";
 import { useCommonStore } from "~/stores/common";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const users = useUsersStore();
 const common = useCommonStore();
+const snackbar = useSnackbarStore();
 
 const itemsPerPage = ref(10);
 
 const headers = [
     { title: "Nome", key: "name" },
-    // { title: "Telefone", sortable: false, key: "phones" },
     { title: "E-mail", key: "email" },
-    // { title: "CPF", key: "cpf" },
     { title: "Ações", align: "center", sortable: false, key: "actions" },
 ];
 
 const itemsPerPageOptions = [
+    { value: 5, title: "5" },
     { value: 10, title: "10" },
     { value: 25, title: "25" },
     { value: 50, title: "50" },
-    { value: 100, title: "100" },
 ];
 
 const isLoading = ref(false);
@@ -154,7 +141,7 @@ async function loadItems({ page, itemsPerPage, sortBy }) {
     };
 
     // indexItem(paramsData);
-	await users.indexApiAction(paramsData);
+    await users.indexApiAction(paramsData);
     isLoading.value = false;
 }
 
@@ -162,34 +149,23 @@ function loadSearch() {
     searchTable.value = search.value;
 }
 
-
 const title = ref(null);
 const openModalForm = ref(false);
 
 function openForm(type, id) {
     users.formData = {};
-	users.storeForm = false
-	users.editForm = false
+    users.storeForm = false;
+    users.editForm = false;
 
     if (type === "store") {
-		users.storeForm = true
+        users.storeForm = true;
         title.value = "Cadastro Funcionário";
     } else if (type === "update") {
-		users.editForm = true
+        users.editForm = true;
         title.value = "Editar Funcionário";
         showItem(id);
     }
-
     openModalForm.value = true;
-}
-
-
-const userData = ref({});
-const openModalAuthorization = ref(false);
-
-function openFormAuthorization(item) {
-    userData.value = item;
-    openModalAuthorization.value = true;
 }
 
 async function showItem(id) {
@@ -199,36 +175,12 @@ async function showItem(id) {
     users.isLoading = false;
 }
 
+const userData = ref({});
+const openModalAuthorization = ref(false);
 
-
-
-
-
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
-const subTitleSnackbar = ref(null);
-const colorSnackbar = ref(null);
-const iconSnackbar = ref(null);
-function updateSnackbar(step) {
-    switch (step) {
-        case 1:
-            titleSnackbar.value = users.formData.name;
-            break;
-        case 2:
-            titleSnackbar.value = "Endereço";
-            break;
-        case 3:
-            titleSnackbar.value = "Telefones";
-            break;
-        case 4:
-            titleSnackbar.value = "Dados opcionais";
-            break;
-    }
-
-    subTitleSnackbar.value = "Cadastrado com sucesso";
-    colorSnackbar.value = "green";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
-    showSnackbar.value = true;
+function openFormAuthorization(item) {
+    userData.value = item;
+    openModalAuthorization.value = true;
 }
 
 const itemSelected = ref(null);
@@ -239,14 +191,22 @@ function confirmDeleteItem(item) {
 
 async function deleteItem() {
     isLoading.value = true;
+
     await users.destroyApiAction(itemSelected.value.id);
 
+    callSnackbar()
+
     isLoading.value = false;
-    showSnackbar.value = true;
-    titleSnackbar.value = itemSelected.value.name;
-    subTitleSnackbar.value = "Apagado com sucesso";
-    colorSnackbar.value = "red";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
+
+}
+
+function callSnackbar() {
+    snackbar.show = true;
+    snackbar.title = itemSelected.value.name;
+    snackbar.subTitle = "Apagado com sucesso";
+    snackbar.color = "red";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>
 

@@ -37,7 +37,6 @@ const actions = {
 		}
 	},
 
-	
 
 	async storeApiAction(formData) {
 
@@ -63,19 +62,35 @@ const actions = {
 
 	async showApiAction(id) {
 
-		const endpoint = `users/${id}`;
+		// const authentication = useAuthenticationStore();
+		// paramsData.tenantIds = authentication.tenantIds
 
-		const { data } = await useApi(endpoint);
+		const existingData = this.storeUsers.find(el => JSON.stringify(el.user.id) === JSON.stringify(id));
 
-		if (data) {
-			this.apiErrors = {}
-			this.formData = deepClone(data.data)
-			const index = this.data.findIndex(el => el.id === id)
-			this.data[index] = { ...data.data }
+		if (existingData) {
+			this.formData = existingData.user;
+			return; // Retorna se os dados já existem
 		}
-
 		else {
-			this.apiErrors = error
+
+
+			const endpoint = `users/${id}`;
+
+			const { data } = await useApi(endpoint);
+
+			if (data) {
+				this.storeUsers.push({
+					user: data.data,
+				});
+				this.apiErrors = {}
+				this.formData = data.data
+				// const index = this.data.findIndex(el => el.id === id)
+				// this.data[index] = { ...data.data }
+			}
+
+			else {
+				this.apiErrors = error
+			}
 		}
 	},
 
@@ -110,16 +125,16 @@ const actions = {
 
 
 	async updateApiAction(formData) {
+console.log('formData', formData);
+		// const formDataClone = deepClone(formData);
 
-		const formDataClone = deepClone(formData);
-
-		// Remover pontos e traço do CPF
-		formDataClone.cpf = formatCpf(formDataClone.cpf);
+		// // Remover pontos e traço do CPF
+		// formDataClone.cpf = formatCpf(formDataClone.cpf);
 
 		const endpoint = `users/${formData.id}`;
 		const options = {
 			method: 'PUT',
-			body: formDataClone
+			body: formData
 		};
 
 		const { data, error } = await useApi(endpoint, options);
