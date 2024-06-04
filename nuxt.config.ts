@@ -5,7 +5,7 @@ export default defineNuxtConfig({
 
 	runtimeConfig: {
 		public: {
-			apiBase: 'http://3.238.196.222/'
+			apiBase: 'https://api.iasapp.com.br/'
 		}
 	},
 

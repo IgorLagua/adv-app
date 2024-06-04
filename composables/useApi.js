@@ -12,7 +12,7 @@ export async function useApi(endpoint, options = {}) {
 
 	// Configurações padrão para o useFetch
 	const defaultOptions = {
-		baseUrl: 'http://localhost/api/v1/', // Valor padrão para baseUrl
+		baseUrl: 'https://api.iasapp.com.br/api/v1/', // Valor padrão para baseUrl
 		method: 'GET', // Por padrão, o método será GET
 		headers: {
 			'Content-Type': 'application/json',
