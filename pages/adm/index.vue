@@ -1,6 +1,6 @@
 <template>
     <div>
-        teste
+        IAS Software Jurídico
     </div>
 </template>
 

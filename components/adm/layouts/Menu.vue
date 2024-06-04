@@ -4,7 +4,7 @@
         <AdmLayoutsMenuSelectTenants v-if="authentication.tenants.length > 1" />
         <v-divider></v-divider>
 
-        <v-list density="compact">
+        <!-- <v-list density="compact">
             <v-list-subheader class="ml-n3">Super Admin</v-list-subheader>
 
             <v-list-item
@@ -21,6 +21,7 @@
                 color="orange-darken-3"
             ></v-list-item>
         </v-list>
+	<v-divider></v-divider> -->
 
         <v-list density="compact">
             <v-list-subheader class="ml-n3">Cadastros</v-list-subheader>
@@ -102,7 +103,7 @@ const authentication = useAuthenticationStore();
 const open = ref([]);
 
 const registrations = [
-    ["Funcionários", "/adm/users"],
+//     ["Funcionários", "/adm/users"],
     ["Clientes", "/adm/customers"],
     ["Empresas", "/adm/companies"],
     // [

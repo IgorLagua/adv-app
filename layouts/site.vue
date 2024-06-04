@@ -15,12 +15,15 @@
             </template> -->
 
             <v-app-bar-nav-icon></v-app-bar-nav-icon>
-            
-            <v-app-bar-title>IAS Software Jurídico <pre>{{ teste }}</pre></v-app-bar-title>
+
+            <v-app-bar-title
+                >IAS Software Jurídico
+                <!-- <pre>{{ teste }}</pre> -->
+            </v-app-bar-title>
 
             <v-spacer></v-spacer>
 
-            <v-btn icon>
+            <!-- <v-btn icon>
                 <v-icon>mdi-magnify</v-icon>
             </v-btn>
 
@@ -30,10 +33,10 @@
 
             <v-btn icon>
                 <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
+            </v-btn> -->
 
             <template v-slot:extension>
-                <v-tabs 
+                <v-tabs
                     v-model="tab"
                     align-tabs="title"
                     class="mt-15"
@@ -46,47 +49,44 @@
                         router
                         exact
                     >
-                        {{item.title}}                    
+                        {{ item.title }}
                     </v-tab>
                 </v-tabs>
             </template>
-    
-            
         </v-app-bar>
-    
+
         <v-main class="bg-grey-lighten-3">
             <!-- <v-container> -->
-                <slot />
+            <slot />
             <!-- </v-container> -->
         </v-main>
     </v-app>
 </template>
   
 <script setup>
-    
-    const tab = ref(null)
-    const teste = ref(null)
+const tab = ref(null);
+const teste = ref(null);
 
-    const items = [
-        {
-            title: 'Inicio',
-            to: '/'
-        },
-        {
-            title: 'Planos',
-            to: '/site/plans'
-        },
-        {
-            title: 'Registrar',
-            to: '/site/register'
-        },
-		{
-            title: 'Entrar',
-            to: '/site/login'
-        },
-        // {
-        //     title: 'Entrar',
-        //     to: '/adm/'
-        // },
-    ]
+const items = [
+    //     {
+    //         title: "Inicio",
+    //         to: "/",
+    //     },
+    //     {
+    //         title: "Planos",
+    //         to: "/site/plans",
+    //     },
+    //     {
+    //         title: "Registrar",
+    //         to: "/site/register",
+    //     },
+    {
+        title: "Entrar",
+        to: "/site/login",
+    },
+    // {
+    //     title: 'Entrar',
+    //     to: '/adm/'
+    // },
+];
 </script>

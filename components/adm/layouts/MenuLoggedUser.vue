@@ -3,8 +3,8 @@
     <div>
         <v-list>
             <v-row class="mt-1 mb-1">
+                    <!-- prepend-avatar="https://cdn.vuetifyjs.com/images/john.png" -->
                 <v-list-item
-                    prepend-avatar="https://cdn.vuetifyjs.com/images/john.png"
                     :title="authentication.user?.name"
                     subtitle="Administrador"
                 >
@@ -20,11 +20,11 @@
                             </template>
 
                             <v-list>
-                                <v-list-item
+                                <!-- <v-list-item
                                     title="Perfil"
                                     prepend-icon="mdi-card-account-details-outline"
                                     @click="dialog =!dialog"
-                                ></v-list-item>
+                                ></v-list-item> -->
 
                                 <!-- <v-list-item
                                     v-for="[icon, text, route] in user"

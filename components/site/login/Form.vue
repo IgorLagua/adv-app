@@ -5,7 +5,7 @@
                 <v-card
                     color="rgba(255, 255, 255, 0.9)"
                     class="mx-auto"
-                    max-width="400"
+                    max-width="500"
                     elevation="18"
                     rounded="lg"
                     title="Login"
@@ -99,8 +99,10 @@ const {
 } = useValidation();
 
 const formData = ref({
-    email: "igor.lagua@hotmail.com",
-    password: "password",
+//     email: "igor.lagua@hotmail.com",
+//     password: "password",
+    email: null,
+    password: null,
 });
 const showPassword = ref(false);
 const formIsValid = ref(false);
