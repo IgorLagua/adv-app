@@ -60,7 +60,7 @@
                         <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"
-								icon="mdi-trash-can-outline"
+                                icon="mdi-trash-can-outline"
                                 color="red"
                                 @click="confirmDeleteItem(item)"
                             ></v-icon>
@@ -70,27 +70,13 @@
             </v-data-table-server>
         </v-card>
 
-        <AdmCustomersForm
-            v-if="customers.openModalForm"
-            :title="title"
-            @update="updateSnackbar"
-        />
+        <AdmCustomersForm v-if="customers.openModalForm" :title="title" />
 
         <AdmCommonDialogDeleteItem
             v-if="common.showDialogDelete"
             :name="itemSelected.name"
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
-
-        <AdmCommonSnackbar
-            v-if="showSnackbar"
-            v-model="showSnackbar"
-            :title="titleSnackbar"
-            :subTitle="subTitleSnackbar"
-            :color="colorSnackbar"
-            :timeout="4000"
-            :icon="iconSnackbar"
-        ></AdmCommonSnackbar>
 
     </div>
 </template>
@@ -99,9 +85,11 @@
 <script setup>
 import { useCustomersStore } from "~/stores/adm/customers";
 import { useCommonStore } from "~/stores/common";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const customers = useCustomersStore();
 const common = useCommonStore();
+const snackbar = useSnackbarStore();
 
 const itemsPerPage = ref(10);
 
@@ -136,7 +124,7 @@ function openForm(type, id) {
 
 async function showItem(id) {
     customers.isLoading = true;
-        // console.log("id", id);
+    // console.log("id", id);
     await customers.showApiAction(id);
     customers.isLoading = false;
 }
@@ -145,57 +133,21 @@ const isLoading = ref(false);
 const search = ref("");
 const searchTable = ref("");
 
-
-
-function loadItems({ page, itemsPerPage, sortBy }) {
+async function loadItems({ page, itemsPerPage, sortBy }) {
     isLoading.value = true;
 
-	const paramsData = {
+    const paramsData = {
         page,
         itemsPerPage,
         sortBy,
         search: searchTable.value ? searchTable.value : [],
     };
-
-    indexItem(paramsData);
-}
-
-
-
-async function indexItem(paramsData) {
     await customers.indexApiAction(paramsData);
     isLoading.value = false;
 }
 
 function loadSearch() {
     searchTable.value = search.value;
-}
-
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
-const subTitleSnackbar = ref(null);
-const colorSnackbar = ref(null);
-const iconSnackbar = ref(null);
-function updateSnackbar(step) {
-    switch (step) {
-        case 1:
-            titleSnackbar.value = customers.formData.name;
-            break;
-        case 2:
-            titleSnackbar.value = "Endereço";
-            break;
-        case 3:
-            titleSnackbar.value = "Telefones";
-            break;
-        case 4:
-            titleSnackbar.value = "Dados opcionais";
-            break;
-    }
-
-    subTitleSnackbar.value = "Cadastrado com sucesso";
-    colorSnackbar.value = "green";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
-    showSnackbar.value = true;
 }
 
 const itemSelected = ref(null);
@@ -207,13 +159,17 @@ function confirmDeleteItem(item) {
 async function deleteItem() {
     isLoading.value = true;
     await customers.destroyApiAction(itemSelected.value.id);
+    isLoading.value = false;
+    callSnackbar();
+}
 
-	isLoading.value = false;
-    showSnackbar.value = true;
-    titleSnackbar.value = itemSelected.value.name;
-    subTitleSnackbar.value = "Apagado com sucesso";
-    colorSnackbar.value = "red";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
+function callSnackbar() {
+    snackbar.show = true;
+    snackbar.title = itemSelected.value.name;
+    snackbar.subTitle = "Apagado com sucesso";
+    snackbar.color = "red";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>
 

@@ -59,7 +59,7 @@
                         <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"
-								icon="mdi-trash-can-outline"
+                                icon="mdi-trash-can-outline"
                                 color="red"
                                 @click="confirmDeleteItem(item)"
                             ></v-icon>
@@ -72,8 +72,7 @@
         <AdmTemplatesDialogTableForm
             v-if="templates.openModalForm"
             :title="titleForm + templates.nameDialog"
-            @update="updateSnackbar"
-			/>
+        />
 
         <AdmCommonDialogDeleteItem
             v-if="common.showDialogDelete"
@@ -81,7 +80,7 @@
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
 
-        <AdmCommonSnackbar
+        <!-- <AdmCommonSnackbar
             v-if="showSnackbar"
             v-model="showSnackbar"
             :title="titleSnackbar"
@@ -89,7 +88,7 @@
             :color="colorSnackbar"
             :timeout="4000"
             :icon="iconSnackbar"
-        ></AdmCommonSnackbar>
+        ></AdmCommonSnackbar> -->
     </div>
 </template>
 
@@ -97,13 +96,15 @@
 <script setup>
 import { useTemplatesStore } from "~/stores/adm/templates";
 import { useTemplatesCategoriesStore } from "~/stores/adm/templatesCategories";
-import { useCommonStore } from "~/stores/common";
 import { useTemplatesFilesStore } from "~/stores/adm/templatesFiles";
+import { useCommonStore } from "~/stores/common";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const templates = useTemplatesStore();
 const templatesCategories = useTemplatesCategoriesStore();
 const templatesFiles = useTemplatesFilesStore();
 const common = useCommonStore();
+const snackbar = useSnackbarStore();
 
 const itemsPerPage = ref(5);
 const isLoading = ref(false);
@@ -203,48 +204,6 @@ function openForm(type, item) {
     templates.openModalForm = true;
 }
 
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
-const subTitleSnackbar = ref(null);
-const colorSnackbar = ref(null);
-const iconSnackbar = ref(null);
-function updateSnackbar(type, name) {
-    // if (Object.keys(templatesCategories.apiErrors).length === 0) {
-        if (type === "store" || "edit") {
-            titleSnackbar.value = name;
-            if (type === "store") {
-                subTitleSnackbar.value = "Cadastrado com sucesso";
-            }
-            if (type === "edit") {
-                subTitleSnackbar.value = "Editado com sucesso";
-            }
-            colorSnackbar.value = "green";
-            iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
-        }
-    // } else {
-    //     // Obtenha a primeira chave do objeto apiErrors
-    //     let firstKey = Object.keys(templatesCategories.apiErrors)[0];
-
-    //     // Acesse o primeiro item do array dessa chave
-    //     let firstErrorMessage = templatesCategories.apiErrors[firstKey][0];
-
-    //     // if (type === "store" || "edit") {
-    //     if (type === "store") {
-    //         titleSnackbar.value = "Erro no cadastro";
-    //         subTitleSnackbar.value = firstErrorMessage;
-    //     }
-    //     if (type === "edit") {
-    //         titleSnackbar.value = "Erro na edição";
-    //         subTitleSnackbar.value = "Editado com sucesso";
-    //     }
-    //     colorSnackbar.value = "red";
-    //     iconSnackbar.value = "mdi-alert";
-    //     // }
-    // }
-
-    showSnackbar.value = true;
-}
-
 const itemDelete = ref(null);
 
 const confirmDeleteItem = (item) => {
@@ -255,13 +214,25 @@ const confirmDeleteItem = (item) => {
 async function deleteItem() {
     isLoading.value = true;
 
-    await templatesCategories.destroyApiAction(itemDelete.value.id);
+	if (templates.nameDialog === "Categoria") {
+    	await templatesCategories.destroyApiAction(itemDelete.value.id);
+	}
+
+	if (templates.nameDialog === "Modelo") {
+    	await templatesFiles.destroyApiAction(itemDelete.value.id);
+	}
+
+	callSnackbar();
 
     isLoading.value = false;
-    showSnackbar.value = true;
-    titleSnackbar.value = itemDelete.value.name;
-    subTitleSnackbar.value = "Apagado com sucesso";
-    colorSnackbar.value = "red";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
+}
+
+function callSnackbar() {
+    snackbar.show = true;
+    snackbar.title = itemDelete.value.name;
+    snackbar.subTitle = "Apagado com sucesso";
+    snackbar.color = "red";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>

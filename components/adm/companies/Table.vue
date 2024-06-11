@@ -60,7 +60,7 @@
                         <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"
-								icon="mdi-trash-can-outline"
+                                icon="mdi-trash-can-outline"
                                 color="red"
                                 @click="confirmDeleteItem(item)"
                             ></v-icon>
@@ -70,39 +70,27 @@
             </v-data-table-server>
         </v-card>
 
-        <AdmCompaniesForm
-            v-if="companies.openModalForm"
-            :title="title"
-            @update="updateSnackbar"
-        />
+        <AdmCompaniesForm v-if="companies.openModalForm" :title="title" />
 
         <AdmCommonDialogDeleteItem
             v-if="common.showDialogDelete"
             :name="itemSelected.corporateName"
-            @update="deleteItem"
+	    @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
-
-        <AdmCommonSnackbar
-            v-if="showSnackbar"
-            v-model="showSnackbar"
-            :title="titleSnackbar"
-            :subTitle="subTitleSnackbar"
-            :color="colorSnackbar"
-            :timeout="4000"
-            :icon="iconSnackbar"
-        ></AdmCommonSnackbar>
     </div>
 </template>
 
 
 <script setup>
 import { useCompaniesStore } from "~/stores/adm/companies";
-import { useCustomersStore } from '~/stores/adm/customers'
+import { useCustomersStore } from "~/stores/adm/customers";
 import { useCommonStore } from "~/stores/common";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const companies = useCompaniesStore();
-const customers = useCustomersStore()
+const customers = useCustomersStore();
 const common = useCommonStore();
+const snackbar = useSnackbarStore();
 
 const itemsPerPage = ref(10);
 
@@ -123,9 +111,14 @@ const itemsPerPageOptions = [
 
 const title = ref(null);
 async function openForm(type, id) {
+    isLoading.value = true;
     companies.formData = {};
     companies.formData.address = {};
-	await customers.indexApiAction()
+    const paramsData = {
+        page: 1,
+        itemsPerPage: 10,
+    };
+    await customers.indexApiAction(paramsData);
     if (type === "store") {
         title.value = "Cadastro Empresa";
     } else if (type === "update") {
@@ -134,49 +127,37 @@ async function openForm(type, id) {
     }
 
     companies.openModalForm = true;
+    isLoading.value = false;
 }
 
 async function showItem(id) {
     companies.isLoading = true;
-	// await sleep(3000)
-	await companies.showApiAction(id);
+    // await sleep(3000)
+    await companies.showApiAction(id);
 
-	const customerId = companies.formData.customerId
+    const customerId = companies.formData.customerId;
 
-	// Verifica se a empresa tem customerId
-	// E se existe customerId em customers.data
-	// Se não existe faz uma requisição para API e insere o retorno no customers.data
-	if ( customerId ) {
-		const exists = customers.data.some(customer => customer.id === customerId);
-		
-		if ( !exists ) {
-			await customers.showApiAction(customerId);
-			customers.data.push(customers.formData)
-		}
-	}
-	companies.isLoading = false;
+    // Verifica se a empresa tem customerId
+    // E se existe customerId em customers.data
+    // Se não existe faz uma requisição para API e insere o retorno no customers.data
+    if (customerId) {
+        const exists = customers.data.some(
+            (customer) => customer.id === customerId
+        );
+
+        if (!exists) {
+            await customers.showApiAction(customerId);
+            customers.data.push(customers.formData);
+        }
+    }
+    companies.isLoading = false;
 }
 
 const isLoading = ref(false);
 const search = ref("");
 const searchTable = ref("");
 
-
-
-// Carrega os dados inicialmente para SSR
-// useAsyncData(() => {
-//     // if (!companies.isLoaded) {
-//         return indexItem({
-//             page: 1,
-//             itemsPerPage: itemsPerPage.value,
-//             sortBy: [],
-//             search: [],
-//         });
-//     // }
-// });
-
-
-function loadItems({ page, itemsPerPage, sortBy }) {
+async function loadItems({ page, itemsPerPage, sortBy }) {
     isLoading.value = true;
 
     const paramsData = {
@@ -185,44 +166,12 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         sortBy,
         search: searchTable.value ? searchTable.value : [],
     };
-
-    indexItem(paramsData);
-}
-
-async function indexItem(paramsData) {
     await companies.indexApiAction(paramsData);
     isLoading.value = false;
 }
 
 function loadSearch() {
     searchTable.value = search.value;
-}
-
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
-const subTitleSnackbar = ref(null);
-const colorSnackbar = ref(null);
-const iconSnackbar = ref(null);
-function updateSnackbar(step) {
-    switch (step) {
-        case 1:
-            titleSnackbar.value = companies.formData.corporateName;
-            break;
-        case 2:
-            titleSnackbar.value = "Endereço";
-            break;
-        case 3:
-            titleSnackbar.value = "Telefones";
-            break;
-        case 4:
-            titleSnackbar.value = "Dados opcionais";
-            break;
-    }
-
-    subTitleSnackbar.value = "Cadastrado com sucesso";
-    colorSnackbar.value = "green";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
-    showSnackbar.value = true;
 }
 
 const itemSelected = ref(null);
@@ -233,14 +182,18 @@ function confirmDeleteItem(item) {
 
 async function deleteItem() {
     isLoading.value = true;
-	await companies.destroyApiAction(itemSelected.value.id);
-    
-	isLoading.value = false;
-	showSnackbar.value = true;
-	titleSnackbar.value = itemSelected.value.corporateName;
-	subTitleSnackbar.value = "Apagado com sucesso";
-	colorSnackbar.value = "red";
-	iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
+    await companies.destroyApiAction(itemSelected.value.id);
+    isLoading.value = false;
+    callSnackbar();
+}
+
+function callSnackbar() {
+    snackbar.show = true;
+    snackbar.title = itemSelected.value.corporateName;
+    snackbar.subTitle = "Apagado com sucesso";
+    snackbar.color = "red";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>
 

@@ -38,9 +38,22 @@
             :label="data.label"
             :rules="data.rules"
             :items="data.items"
+	    item-title="name"
+    	    item-value="value"
             v-model="currentValue"
             :error-messages="data.errorMensages"
         ></v-select>
+
+	<!-- <v-select
+            v-if="data.type === 'selectCustomValue'"
+            :label="data.label"
+            :rules="data.rules"
+            :items="data.items"
+	    item-title="name"
+    	    item-value="value"
+            v-model="currentValue"
+            :error-messages="data.errorMensages"
+        ></v-select> -->
 
         <v-text-field
             v-if="data.type === 'date'"

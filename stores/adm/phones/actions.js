@@ -130,34 +130,60 @@ const actions = {
 
 
 	async updateApiAction(formData) {
-		// console.log('formData', formData);
 
+		const formattedFormData = deepClone(formData)
 		// Remover caracteres dos números dos telefones
-		formData.phones.forEach(phone => {
+		formattedFormData.phones.forEach(phone => {
 			phone.number = cleanPhoneNumber(phone);
 		});
 
-		try {
-			const { data, error, fetchData } = fetchApi(`phones/${formData.id}`, {
-				// queryParams: paramsData,
-				method: 'PUT',
-				body: formData
-			});
-			await fetchData();
+		// console.log('formattedFormData', formattedFormData);
+		const endpoint = `phones/${formData.id}`;
+		const options = {
+			method: 'PUT',
+			body: formattedFormData
+		};
 
-			if (data.value) {
-				if (data.value.errors) {
-					this.apiErrors = data.value.errors;
-				} else {
-					this.apiErrors = {};
-					if (storeTypes[formData.type]) {
-						updatePhoneData(formData.type, data.value.data, formData.id);
-					}
-				}
+		const { data, error } = await useApi(endpoint, options);
+
+
+		if (data) {
+			this.apiErrors = {};
+			if (storeTypes[formData.type]) {
+				updatePhoneData(formData.type, data.data, formData.id);
 			}
-		} catch (error) {
-			console.error('Catch block error:', error);
+
+			else {
+				this.apiErrors = error
+			}
+
+
+			
 		}
+
+
+
+		// try {
+		// 	// const { data, error } = useApi(`phones/${formData.id}`, {
+		// 	// 	// queryParams: paramsData,
+		// 	// 	method: 'PUT',
+		// 	// 	body: formData
+		// 	// });
+		// 	// await fetchData();
+
+		// 	if (data.value) {
+		// 		if (data.value.errors) {
+		// 			this.apiErrors = data.value.errors;
+		// 		} else {
+		// 			this.apiErrors = {};
+		// 			if (storeTypes[formData.type]) {
+		// 				updatePhoneData(formData.type, data.value.data, formData.id);
+		// 			}
+		// 		}
+		// 	}
+		// } catch (error) {
+		// 	console.error('Catch block error:', error);
+		// }
 
 		// if (data.value && data.value.errors) {	//erro de validação do servidor
 		// 	this.apiErrors = data.value.errors

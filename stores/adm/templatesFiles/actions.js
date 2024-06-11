@@ -99,6 +99,27 @@ const actions = {
 		}
 	},
 
+	async storeApiAction(formData) {
+// console.log('formData', formData);
+		const endpoint = "template_files";
+		const options = {
+			method: 'POST',
+			body: formData
+		};
+
+		const { data, error } = await useApi(endpoint, options);
+
+		if (data) {
+			this.apiErrors = {}
+			this.dataTable.unshift(data.data)
+			this.totalItems++
+		}
+
+		else {
+			this.apiErrors = error
+		}
+	},
+
 	async updateApiAction(formData) {
 
 		const endpoint = `template_files/${formData.id}`;
@@ -119,6 +140,30 @@ const actions = {
 			this.apiErrors = error
 		}
 	},
+
+
+	async destroyApiAction(id) {
+
+		const endpoint = `template_files/${id}`;
+
+		const options = {
+			method: 'DELETE',
+		};
+
+		const { data, error } = await useApi(endpoint, options);
+
+		if (data) {
+			this.apiErrors = {}
+			const index = this.dataTable.findIndex(el => el.id === id)
+			this.dataTable.splice(index, 1);
+			this.totalItems--
+		}
+
+		else {
+			this.apiErrors = error
+		}
+	},
+
 };
 
 export default { ...actions };

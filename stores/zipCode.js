@@ -22,11 +22,16 @@ export const useZipCodeStore = defineStore('zipCode', {
 
 			else {
 
+				
+
 				const endpoint = `${zipCodeNumber}/json/`;
-				const options = {
-					baseUrl: "https://viacep.com.br/ws/",
-				};
-				const { data, errorValue } = await useApi(endpoint, options);
+				const baseUrl = "https://viacep.com.br/ws/";
+
+				// Preparar a URL com os parâmetros de query
+				let url = new URL(endpoint, baseUrl);
+
+				// const { data, errorValue } = await useApi(endpoint, options);
+				let data = await $fetch(url.href);
 
 				if (data) {
 					this.apiErrors = {}

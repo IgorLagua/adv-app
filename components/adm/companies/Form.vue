@@ -27,7 +27,7 @@
                             <v-form ref="form1">
                                 <v-row>
                                     <v-col
-                                        v-for="data in companies.fieldConfigMandatory"
+                                        v-for="data in companyDataRequired"
                                         :key="data.label"
                                         :cols="data.cols"
                                         :sm="data.sm"
@@ -86,7 +86,7 @@
                             <v-form ref="form2">
                                 <v-row>
                                     <v-col
-                                        v-for="data in addresses.fieldConfig"
+                                        v-for="data in addressDataRequired"
                                         :key="data.label"
                                         :cols="data.cols"
                                         :sm="data.sm"
@@ -128,7 +128,7 @@
                             <v-form ref="form4">
                                 <v-row>
                                     <v-col
-                                        v-for="data in companies.fieldConfigOptional"
+                                        v-for="data in companyDataOptional"
                                         :key="data.label"
                                         :cols="data.cols"
                                         :sm="data.sm"
@@ -229,6 +229,7 @@ import { useAddressesStore } from "~/stores/adm/addresses";
 import { usePhonesStore } from "~/stores/adm/phones";
 import { useCnpjStore } from "~/stores/cnpj";
 import { useZipCodeStore } from "~/stores/zipCode";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const companies = useCompaniesStore();
 const customers = useCustomersStore();
@@ -236,81 +237,50 @@ const addresses = useAddressesStore();
 const phones = usePhonesStore();
 const cnpj = useCnpjStore();
 const zipCode = useZipCodeStore();
+const snackbar = useSnackbarStore();
 
 const { updateErrorMessages } = useApiErrorMessages();
-
 
 const props = defineProps({
     title: { type: String, required: false },
 });
 
-const emit = defineEmits(["update"]);
+// const emit = defineEmits(["update"]);
 
-// Mascaras dos inputs --> vem da pasta composables
-const { cnpjMask, zipCodeMask } = useMask();
+// Dados dos inputs com Validações --> vem da pasta composables/useDataCompany
+const companyDataRequired = ref(companyFieldsRequired());
+const companyDataOptional = ref(companyFieldsOptional());
 
-// Validações dos inputs --> vem da pasta composables
-const {
-    cnpjValidation,
-    requiredValidation,
-    emailValidation,
-    equalLengthValidation,
-    minLengthValidation,
-    maxLengthValidation,
-} = useValidation();
+const addressDataRequired = ref(addressFieldsRequired());
 
-// Obtém somente a composables brazilianStates de utilsComposable
-const { brazilianStates } = utilsComposable();
+// const loadingCustomer = ref(false);
 
-const loadingZipCode = ref(false);
-// Endereço --> Inicializa a configuração dos campos com as funções necessárias
-addresses.initializeFieldConfig(
-    requiredValidation,
-    equalLengthValidation,
-    minLengthValidation,
-    maxLengthValidation,
-    zipCodeMask,
-    brazilianStates,
-    loadingZipCode
-);
-
-const loadingCnpj = ref(false);
-const loadingCustomer = ref(false);
-
-// empresa obrigatórios --> Inicializa a configuração dos campos com as funções necessárias
-companies.initializeFieldConfigMandatory(
-    requiredValidation,
-    equalLengthValidation,
-    minLengthValidation,
-    maxLengthValidation,
-    cnpjValidation,
-    cnpjMask,
-    loadingCnpj,
-    loadingCustomer
-);
-
-// empresa obrigatórios --> Inicializa a configuração dos campos com as funções necessárias
-companies.initializeFieldConfigOptional(
-    emailValidation,
-    minLengthValidation,
-    maxLengthValidation
-);
+// // empresa obrigatórios --> Inicializa a configuração dos campos com as funções necessárias
+// companies.initializeFieldConfigMandatory(
+//     requiredValidation,
+//     equalLengthValidation,
+//     minLengthValidation,
+//     maxLengthValidation,
+//     cnpjValidation,
+//     cnpjMask,
+//     loadingCnpj,
+//     loadingCustomer
+// );
 
 async function updateCompany(value) {
-	
-
-    loadingCnpj.value = true;
+    companyDataRequired.value[0].loading = true;
     await cnpj.getCnpjAction(value);
+    companyDataRequired.value[0].loading = false;
 
-    loadingCnpj.value = false;
-
-    if ( Object.values(cnpj.apiErrors).length !== 0) {		//Se tem erro da API
-		companies.fieldConfigMandatory[0].errorMensages = "CNPJ não encontrado";
+    if (Object.values(cnpj.apiErrors).length !== 0) {
+        //Se tem erro da API
+        companyDataRequired.value[0].errorMensages = "CNPJ não encontrado";
         companies.formData.corporateName = null;
         companies.formData.fantasyName = null;
         companies.formData.type = null;
         companies.formData.address.zipCode = null;
     } else {
+	companies.formData.address.zipCode = cnpj.formData.cep
         companies.formData.corporateName = formatTextToFirstUpperCase(
             cnpj.formData.razao_social
         );
@@ -324,12 +294,12 @@ async function updateCompany(value) {
 }
 
 async function updateAddress(value) {
-    loadingZipCode.value = true;
+    addressDataRequired.value[0].loading = true;
     await zipCode.getZipCodeAction(value);
-    loadingZipCode.value = false;
+    addressDataRequired.value[0].loading = false;
 
     if (zipCode.formData.erro) {
-		addresses.fieldConfig[0].errorMensages = "CEP não encontrado";
+        addressDataRequired.value[0].errorMensages = "CEP não encontrado";
         companies.formData.address.address = null;
         companies.formData.address.district = null;
         companies.formData.address.city = null;
@@ -359,7 +329,7 @@ function clearStepForm(step) {
 
     switch (step) {
         case 1:
-            clearFields(companies.fieldConfigMandatory, companies.formData);
+            clearFields(companyDataRequired.value, companies.formData);
             companies.formData.customerId = null;
             getCustomersItens();
             break;
@@ -370,7 +340,7 @@ function clearStepForm(step) {
             companies.formData.phones = [];
             break;
         case 4:
-            clearFields(companies.fieldConfigOptional, companies.formData);
+            clearFields(companyDataOptional.value, companies.formData);
             break;
     }
 }
@@ -391,12 +361,9 @@ const form2 = ref(null);
 const form3 = ref(null);
 const form4 = ref(null);
 
-
-
 const isLoading = ref(false);
 
 async function saveButton() {
-
     let index = null;
     if (companies.formData.id) {
         index = companies.data.findIndex(
@@ -408,17 +375,16 @@ async function saveButton() {
         isLoading.value = true;
 
         let formData = {};
-        companies.fieldConfigMandatory.forEach((value) => {
+        companyDataRequired.value.forEach((value) => {
             formData[value.key] = companies.formData[value.key];
         });
 
-
         if (companies.formData.id) {
             formData.id = companies.formData.id;
-			
+
             await companies.updateApiAction(formData);
         } else {
-			await companies.storeApiAction(formData);
+            await companies.storeApiAction(formData);
         }
 
         isLoading.value = false;
@@ -426,27 +392,26 @@ async function saveButton() {
         // Verifica se existem erros de API retornados.
         if (Object.values(companies.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(companies.apiErrors, companies.fieldConfigMandatory);
+            updateErrorMessages(companies.apiErrors, companyDataRequired.value);
         } else {
             if (Object.keys(companies.formData.address).length === 0) {
-                
-				companies.formData.address.zipCode = cnpj.formData.cep;
-				if ( companies.formData.address.address ) {
-					formatTextToFirstUpperCase(cnpj.formData.logradouro);
-				}
+                companies.formData.address.zipCode = cnpj.formData.cep;
+                if (companies.formData.address.address) {
+                    formatTextToFirstUpperCase(cnpj.formData.logradouro);
+                }
                 companies.formData.address.number = cnpj.formData.numero;
                 companies.formData.address.state = cnpj.formData.uf;
-				if ( companies.formData.address.complement ) {
-					formatTextToFirstUpperCase(cnpj.formData.complemento);
-				}
-				if ( companies.formData.address.district ) {
-					formatTextToFirstUpperCase(cnpj.formData.bairro);
-				}
-				if ( companies.formData.address.city ) {
-					formatTextToFirstUpperCase(cnpj.formData.municipio);
-				}
+                if (companies.formData.address.complement) {
+                    formatTextToFirstUpperCase(cnpj.formData.complemento);
+                }
+                if (companies.formData.address.district) {
+                    formatTextToFirstUpperCase(cnpj.formData.bairro);
+                }
+                if (companies.formData.address.city) {
+                    formatTextToFirstUpperCase(cnpj.formData.municipio);
+                }
             }
-            emit("update", step.value);
+            callSnackbar(companies.formData.corporateName);
         }
     }
 
@@ -464,9 +429,9 @@ async function saveButton() {
         // Verifica se existem erros de API retornados.
         if (Object.values(addresses.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(addresses.apiErrors, addresses.fieldConfig);
+            updateErrorMessages(addresses.apiErrors, addressDataRequired.value);
         } else {
-            emit("update", step.value);
+            callSnackbar("Endereço");
         }
         isLoading.value = false;
     }
@@ -476,7 +441,7 @@ async function saveButton() {
 
         let formData = {};
 
-		formData.phones = companies.formData.phones;
+        formData.phones = companies.formData.phones;
 
         formData.id = companies.formData.id; //pega o ultimo cliente cadastrado e insere no formData
         formData.type = "company";
@@ -501,9 +466,9 @@ async function saveButton() {
         // Verifica se existem erros de API retornados.
         if (Object.values(phones.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(phones.apiErrors, phones.fieldConfig);
+            updateErrorMessages(phones.apiErrors, phones.fieldConfig);
         } else {
-            emit("update", step.value);
+            callSnackbar("Telefones");
         }
         isLoading.value = false;
     }
@@ -516,9 +481,9 @@ async function saveButton() {
         // Verifica se existem erros de API retornados.
         if (Object.values(companies.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(companies.apiErrors, companies.fieldConfigOptional);
+            updateErrorMessages(companies.apiErrors, companyDataOptional.value);
         } else {
-            emit("update", step.value);
+            callSnackbar("Dados opcionais");
         }
         isLoading.value = false;
     }
@@ -564,8 +529,8 @@ const saveDisabled = computed(() => {
         }
 
         if (index >= 0) {
-            for (let i = 0; i < companies.fieldConfigMandatory.length; i++) {
-                const data = companies.fieldConfigMandatory[i];
+            for (let i = 0; i < companyDataRequired.value.length; i++) {
+                const data = companyDataRequired.value[i];
                 if (
                     companies.formData[data.key] !==
                     companies.data[index][data.key]
@@ -577,14 +542,13 @@ const saveDisabled = computed(() => {
     }
 
     if (step.value === 2 && form2.value?.isValid) {
-
         // Se companies.formData.address for nulo, habilita o botão
         if (!companies.formData.address) {
             return false; // Retorna falso para habilitar o botão
         } else {
             //Se qualquer campo for diferente, habilita o botão
-            for (let i = 0; i < addresses.fieldConfig.length; i++) {
-                const data = addresses.fieldConfig[i];
+            for (let i = 0; i < addressDataRequired.value.length; i++) {
+                const data = addressDataRequired.value[i];
 
                 let addressFormData = companies.formData.address[data.key];
                 let addressData = companies.data[index].address[data.key];
@@ -631,8 +595,8 @@ const saveDisabled = computed(() => {
     }
 
     if (step.value === 4 && form4.value?.isValid) {
-        for (let i = 0; i < companies.fieldConfigOptional.length; i++) {
-            const data = companies.fieldConfigOptional[i];
+        for (let i = 0; i < companyDataOptional.value.length; i++) {
+            const data = companyDataOptional.value[i];
 
             // Verifica se existe valor em companies.data[index][data.key]
             // e não existe valor em companies.formData[data.key]
@@ -711,7 +675,6 @@ function prevButton() {
     if (step.value > 1) step.value--;
 }
 
-
 const customerIsLoading = ref(false);
 let timeoutId = null; // Variável para armazenar o ID do timer
 
@@ -764,5 +727,14 @@ function updateSnackbar(step) {
     }
 
     showSnackbar.value = true;
+}
+
+function callSnackbar(title) {
+    snackbar.show = true;
+    snackbar.title = title;
+    snackbar.subTitle = "Cadastrado com sucesso";
+    snackbar.color = "green";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>

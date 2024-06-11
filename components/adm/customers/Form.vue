@@ -24,7 +24,7 @@
                         <v-form ref="form1">
                             <v-row>
                                 <v-col
-                                    v-for="data in customers.fieldConfigMandatory"
+                                    v-for="data in customerDataRequired"
                                     :key="data.label"
                                     :cols="data.cols"
                                     :sm="data.sm"
@@ -47,7 +47,7 @@
                         <v-form ref="form2">
                             <v-row>
                                 <v-col
-                                    v-for="data in addresses.fieldConfig"
+                                    v-for="data in addressDataRequired"
                                     :key="data.label"
                                     :cols="data.cols"
                                     :sm="data.sm"
@@ -88,7 +88,7 @@
                         <v-form ref="form4">
                             <v-row>
                                 <v-col
-                                    v-for="data in customers.fieldConfigOptional"
+                                    v-for="data in customerDataOptional"
                                     :key="data.label"
                                     :cols="data.cols"
                                     :sm="data.sm"
@@ -167,11 +167,13 @@ import { useCustomersStore } from "~/stores/adm/customers";
 import { useAddressesStore } from "~/stores/adm/addresses";
 import { usePhonesStore } from "~/stores/adm/phones";
 import { useZipCodeStore } from "~/stores/zipCode";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const customers = useCustomersStore();
 const addresses = useAddressesStore();
 const phones = usePhonesStore();
 const zipCode = useZipCodeStore();
+const snackbar = useSnackbarStore();
 
 const { updateErrorMessages } = useApiErrorMessages();
 
@@ -179,64 +181,21 @@ const props = defineProps({
     title: { type: String, required: false },
 });
 
-const emit = defineEmits(["update"]);
+// const emit = defineEmits(["update"]);
 
-// Mascaras dos inputs --> vem da pasta composables
-const { cpfMask, zipCodeMask } = useMask();
+// Dados dos inputs com Validações --> vem da pasta composables/useDataCustomer
+const customerDataRequired = ref(customerFieldsRequired());
+const customerDataOptional = ref(customerFieldsOptional());
 
-// Validações dos inputs --> vem da pasta composables
-const {
-    cpfValidation,
-    requiredValidation,
-    emailValidation,
-    equalLengthValidation,
-    minLengthValidation,
-    maxLengthValidation,
-} = useValidation();
-
-// Validações dos inputs --> vem da pasta composables
-const { brazilianStates, nationalities } = utilsComposable();
-
-const loadingZipCode = ref(false);
-// Endereço --> Inicializa a configuração dos campos com as funções necessárias
-addresses.initializeFieldConfig(
-    requiredValidation,
-    equalLengthValidation,
-    minLengthValidation,
-    maxLengthValidation,
-    zipCodeMask,
-    brazilianStates,
-    loadingZipCode
-);
-
-// const loadingCustomer = ref(false);
-
-// empresa obrigatórios --> Inicializa a configuração dos campos com as funções necessárias
-customers.initializeFieldConfigMandatory(
-    requiredValidation,
-    equalLengthValidation,
-    minLengthValidation,
-    maxLengthValidation,
-    cpfMask,
-    nationalities,
-);
-
-// empresa obrigatórios --> Inicializa a configuração dos campos com as funções necessárias
-customers.initializeFieldConfigOptional(
-    emailValidation,
-    minLengthValidation,
-    maxLengthValidation,
-	brazilianStates
-);
-
+const addressDataRequired = ref(addressFieldsRequired());
 
 async function updateAddress(value) {
-	loadingZipCode.value = true;
+    addressDataRequired.value[0].loading = true
     await zipCode.getZipCodeAction(value);
-    loadingZipCode.value = false;
+    addressDataRequired.value[0].loading = false
 
     if (zipCode.formData.erro) {
-		addresses.fieldConfig[0].errorMensages = "CEP não encontrado";
+        addressDataRequired.value[0].errorMensages = "CEP não encontrado";
         customers.formData.address.address = null;
         customers.formData.address.district = null;
         customers.formData.address.city = null;
@@ -251,7 +210,7 @@ async function updateAddress(value) {
         customers.formData.address.number = null;
         customers.formData.address.complement = null;
     }
-};
+}
 
 const step = ref(1);
 
@@ -266,7 +225,7 @@ function clearStepForm(step) {
 
     switch (step) {
         case 1:
-            clearFields(customers.fieldConfigMandatory, customers.formData);
+            clearFields(customerDataRequired.value, customers.formData);
             break;
         case 2:
             customers.formData.address = {};
@@ -275,7 +234,7 @@ function clearStepForm(step) {
             customers.formData.phones = [];
             break;
         case 4:
-            clearFields(customers.fieldConfigOptional, customers.formData);
+            clearFields(customerDataOptional.value, customers.formData);
             break;
     }
 }
@@ -299,7 +258,6 @@ const form4 = ref(null);
 const isLoading = ref(false);
 
 async function saveButton() {
-
     let index = null;
     if (customers.formData.id) {
         index = customers.data.findIndex(
@@ -309,9 +267,9 @@ async function saveButton() {
 
     if (step.value === 1) {
         isLoading.value = true;
-        
+
         let formData = {};
-        customers.fieldConfigMandatory.forEach((value) => {
+        customerDataRequired.value.forEach((value) => {
             formData[value.key] = customers.formData[value.key];
         });
 
@@ -325,32 +283,35 @@ async function saveButton() {
         // Verifica se existem erros de API retornados.
         if (Object.values(customers.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(customers.apiErrors, customers.fieldConfigMandatory);
+            updateErrorMessages(
+                customers.apiErrors,
+                customerDataRequired.value
+            );
         } else {
-            emit("update", step.value);
+	    callSnackbar(customers.formData.name);
         }
-        
+
         isLoading.value = false;
     }
 
     if (step.value === 2) {
         isLoading.value = true;
-        
+
         let formData = {};
 
-		formData = customers.formData.address;
+        formData = customers.formData.address;
 
         formData.id = customers.formData.id; //pega o ultimo cliente cadastrado e insere no formData
-        formData.type = 'customer'
+        formData.type = "customer";
 
         await addresses.storeApiAction(formData);
 
         // Verifica se existem erros de API retornados.
         if (Object.values(addresses.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(addresses.apiErrors, addresses.fieldConfig);
+            updateErrorMessages(addresses.apiErrors, addressDataRequired.value);
         } else {
-            emit("update", step.value);
+	    callSnackbar("Endereço");
         }
 
         isLoading.value = false;
@@ -358,19 +319,18 @@ async function saveButton() {
 
     if (step.value === 3) {
         isLoading.value = true;
-        
+
         let formData = {};
 
-		formData.phones = customers.formData.phones;
-
+	formData.phones = customers.formData.phones;
         formData.id = customers.formData.id; //pega o ultimo cliente cadastrado e insere no formData
-        formData.type = 'customer'
+        formData.type = "customer";
 
         // Se já foi salvo o telefone e o formulario de cadastro esta vazio, apaga o telefone do cliente
         if (
             customers.data[index].phones.length > 0 &&
             customers.formData.phones.length === 1 &&
-            !customers.formData.phones[index].number
+            !customers.formData.phones[0].number
         ) {
             await phones.destroyApiAction({ ...formData });
         }
@@ -380,37 +340,38 @@ async function saveButton() {
         }
         // Se já tem telefone, faz o update
         else {
-            // console.log("Entrou updateApiAction");
             await phones.updateApiAction({ ...formData });
         }
 
         // Verifica se existem erros de API retornados.
         if (Object.values(phones.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-			updateErrorMessages(phones.apiErrors, phones.fieldConfig);
+            updateErrorMessages(phones.apiErrors, phones.fieldConfig);
         } else {
-            emit("update", step.value);
+	    callSnackbar("Telefones");
         }
-        
+
         isLoading.value = false;
     }
 
     if (step.value === 4) {
         isLoading.value = true;
-        
+
         await customers.updateApiAction(customers.formData);
 
         // Verifica se existem erros de API retornados.
         if (Object.values(customers.apiErrors).length !== 0) {
             // Mapeia os erros da API para os campos do formulário.
-            // mapApiErrorsToFormData(customers.fieldConfigOptional, customers.apiErrors);
-        	updateErrorMessages(customers.apiErrors, customers.fieldConfigOptional);
-		} else {
-            emit("update", step.value);
+            // mapApiErrorsToFormData(customerDataOptional.value, customers.apiErrors);
+            updateErrorMessages(
+                customers.apiErrors,
+                customerDataOptional.value
+            );
+        } else {
+	    callSnackbar("Dados opcionais");
         }
-    
+
         isLoading.value = false;
-        
     }
 }
 
@@ -446,8 +407,8 @@ const saveDisabled = computed(() => {
         }
 
         if (index >= 0) {
-            for (let i = 0; i < customers.fieldConfigMandatory.length; i++) {
-                const data = customers.fieldConfigMandatory[i];
+            for (let i = 0; i < customerDataRequired.value.length; i++) {
+                const data = customerDataRequired.value[i];
                 // console.log("customers.formData[data.key]", customers.formData[data.key]);
                 // console.log("customers.data[index][data.key]", customers.data[index][data.key]);
                 if (
@@ -461,15 +422,14 @@ const saveDisabled = computed(() => {
     }
 
     if (step.value === 2 && form2.value?.isValid) {
-        
         // Se customers.formData.address for nulo, habilita o botão
         if (!customers.formData.address) {
             return false; // Retorna falso para habilitar o botão
         } else {
             //Se qualquer campo for diferente, habilita o botão
-            for (let i = 0; i < addresses.fieldConfig.length; i++) {
-                const data = addresses.fieldConfig[i];
-                
+            for (let i = 0; i < addressDataRequired.value.length; i++) {
+                const data = addressDataRequired.value[i];
+
                 let addressFormData = customers.formData.address[data.key];
                 let addressData = customers.data[index].address[data.key];
 
@@ -480,7 +440,6 @@ const saveDisabled = computed(() => {
                 ) {
                     return false; // Retorna falso para habilitar o botão
                 }
-
             }
         }
     }
@@ -509,15 +468,15 @@ const saveDisabled = computed(() => {
         if (
             customers.data[index].phones.length > 0 &&
             customers.formData.phones.length === 1 &&
-            !customers.formData.phones[index].number
+            !customers.formData.phones[0].number
         ) {
             return false; // Retorna falso para habilitar o botão
         }
     }
 
     if (step.value === 4 && form4.value?.isValid) {
-        for (let i = 0; i < customers.fieldConfigOptional.length; i++) {
-            const data = customers.fieldConfigOptional[i];
+        for (let i = 0; i < customerDataOptional.value.length; i++) {
+            const data = customerDataOptional.value[i];
 
             // Verifica se existe valor em customers.data[index][data.key]
             // e não existe valor em customers.formData[data.key]
@@ -595,6 +554,16 @@ async function nextButton() {
 
 function prevButton() {
     if (step.value > 1) step.value--;
+}
+
+
+function callSnackbar(title) {
+    snackbar.show = true;
+    snackbar.title = title;
+    snackbar.subTitle = "Cadastrado com sucesso";
+    snackbar.color = "green";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 
 </script>
