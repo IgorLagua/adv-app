@@ -12,6 +12,7 @@ export function userFieldsRequired() {
 
 	return [
 		{
+			cols: 12,
 			type: "text",
 			label: "Nome completo",
 			errorMensages: null,
@@ -23,6 +24,7 @@ export function userFieldsRequired() {
 			key: "name",
 		},
 		{
+			cols: 12,
 			type: "text",
 			label: "E-mail",
 			errorMensages: null,
@@ -33,11 +35,12 @@ export function userFieldsRequired() {
 			key: "email",
 		},
 		{
+			cols: 12,
 			type: "password",
 			label: "Senha",
 			errorMensages: null,
 			rules: [
-				requiredValidation({ name: 'A senha' }),
+				// requiredValidation({ name: 'A senha' }),
 				minLengthValidation({
 					name: 'A senha',
 					number: 6,

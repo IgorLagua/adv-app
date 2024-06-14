@@ -20,7 +20,7 @@
                 >
                     <template v-slot:item="{ item }">
                         <tr>
-                            <td>{{ item.name }}</td>
+                            <td>{{ item.description }}</td>
                             <td
                                 v-for="permission in permissions.data"
                                 :key="permission.id"
@@ -74,10 +74,10 @@ const resourcesPermissions = useResourcesPermissionsStore();
 const snackbar = useSnackbarStore();
 
 const headers = computed(() => [
-    { title: "Recursos", value: "name" },
+    { title: "Recursos", value: "description" },
     ...permissions.data.map((permission) => ({
-        title: permission.name,
-        value: permission.name,
+        title: permission.description,
+        value: permission.description,
     })),
 ]);
 const itemsPerPage = ref(5);
@@ -119,7 +119,7 @@ async function loadItems({ page, itemsPerPage, sortBy }) {
 
 async function saveButton() {
     isLoadingSaveButton.value = true;
-    formData.value.recourcesPermissions = selectedPermissions.value;
+    formData.value.resourcesPermissions = selectedPermissions.value;
     // console.log('formData.value', formData.value);
     await resourcesPermissions.storeApiAction(formData.value);
     // await sleep(1000)

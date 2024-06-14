@@ -5,11 +5,11 @@ import getters from './getters';
 export const useResourcesPermissionsStore = defineStore('resourcesPermissions', {
 	state: () => ({
 
-		formData: {},
+		// formData: {},
 		storeForm: false,
 		editForm: false,
 
-		totalItems: 0,
+		// totalItems: 0,
 
 		apiErrors: {},
 		

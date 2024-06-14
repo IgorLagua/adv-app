@@ -20,6 +20,10 @@ const actions = {
 			const endpoint = "customers";
 			const options = {
 				query: paramsData,
+				headers: {
+					resourceName: "customer",
+					permissionName: "index"
+				}
 			};
 
 			const { data, error } = await useApi(endpoint, options);
@@ -41,7 +45,7 @@ const actions = {
 		}
 	},
 
-	// Quando procua dados pelo AutoComplete
+	// Quando procua dados pelo AutoComplete --> usado no Modelo Padrão
 	async indexAutoCompleteApiAction(paramsData) {
 
 		const authentication = useAuthenticationStore();
@@ -57,6 +61,10 @@ const actions = {
 			const endpoint = "customers";
 			const options = {
 				query: paramsData,
+				headers: {
+					resourceName: "customer",
+					permissionName: "index"
+				}
 			};
 
 			const { data } = await useApi(endpoint, options);
@@ -93,7 +101,11 @@ const actions = {
 		const endpoint = "customers";
 		const options = {
 			method: 'POST',
-			body: formDataClone
+			body: formDataClone,
+			headers: {
+				resourceName: "customer",
+				permissionName: "store"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -113,8 +125,14 @@ const actions = {
 	async showApiAction(id) {
 
 		const endpoint = `customers/${id}`;
+		const options = {
+			headers: {
+				resourceName: "customer",
+				permissionName: "show"
+			}
+		};
 
-		const { data } = await useApi(endpoint);
+		const { data, error } = await useApi(endpoint, options);
 
 		if (data) {
 			this.apiErrors = {}
@@ -128,6 +146,7 @@ const actions = {
 		}
 	},
 
+	// Quando seleciona dados do AutoComplete --> usado no Modelo Padrão
 	async showAutoCompleteApiAction(customerId) {
 
 		// const authentication = useAuthenticationStore();
@@ -140,8 +159,14 @@ const actions = {
 			return; // Retorna se os dados já existem
 		} else {
 			const endpoint = `customers/${customerId}`;
+			const options = {
+				headers: {
+					resourceName: "customer",
+					permissionName: "show"
+				}
+			};
 
-			const { data } = await useApi(endpoint);
+			const { data, error } = await useApi(endpoint, options);
 
 			if (data) {
 				this.apiErrors = {}
@@ -168,7 +193,11 @@ const actions = {
 		const endpoint = `customers/${formData.id}`;
 		const options = {
 			method: 'PUT',
-			body: formDataClone
+			body: formDataClone,
+			headers: {
+				resourceName: "customer",
+				permissionName: "update"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -191,6 +220,10 @@ const actions = {
 
 		const options = {
 			method: 'DELETE',
+			headers: {
+				resourceName: "customer",
+				permissionName: "delete"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);

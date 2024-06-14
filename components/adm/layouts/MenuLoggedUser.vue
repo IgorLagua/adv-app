@@ -6,7 +6,7 @@
                     <!-- prepend-avatar="https://cdn.vuetifyjs.com/images/john.png" -->
                 <v-list-item
                     :title="authentication.user?.name"
-                    subtitle="Administrador"
+                    :subtitle="authentication.user?.isAdmin ? 'Administrador' : null"
                 >
                     <template v-slot:append>
                         <v-menu>
@@ -20,11 +20,11 @@
                             </template>
 
                             <v-list>
-                                <!-- <v-list-item
+                                <v-list-item
                                     title="Perfil"
                                     prepend-icon="mdi-card-account-details-outline"
-                                    @click="dialog =!dialog"
-                                ></v-list-item> -->
+                                    @click="openForm"
+                                ></v-list-item>
 
                                 <!-- <v-list-item
                                     v-for="[icon, text, route] in user"
@@ -55,8 +55,10 @@
 
 
 <script setup>
+import { useUsersStore } from "~/stores/adm/users";
 import { useAuthenticationStore } from "~/stores/site/authentication";
 
+const user = useUsersStore();
 const authentication = useAuthenticationStore();
 
 // const user = [
@@ -68,6 +70,11 @@ const authentication = useAuthenticationStore();
 const dialog = shallowRef(false);
 
 // const router = useRouter();
+
+function openForm() {
+    user.formData = {...authentication.user};
+    dialog.value = true;
+}
 
 async function logOut() {
 	

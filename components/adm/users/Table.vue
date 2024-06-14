@@ -36,9 +36,9 @@
                 items-per-page-text="Itens por página:"
                 @update:options="loadItems"
             >
-
                 <template v-slot:item.actions="{ item }">
                     <v-tooltip
+                        v-if="!item.isAdmin"
                         text="Editar autorização do funcionário"
                         location="top"
                     >
@@ -97,7 +97,6 @@
             :name="itemSelected.name"
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
-
     </div>
 </template>
 
@@ -194,10 +193,9 @@ async function deleteItem() {
 
     await users.destroyApiAction(itemSelected.value.id);
 
-    callSnackbar()
+    callSnackbar();
 
     isLoading.value = false;
-
 }
 
 function callSnackbar() {

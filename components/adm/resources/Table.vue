@@ -71,9 +71,9 @@
         </v-card>
 
         <AdmResourcesForm
+            v-if="openModalForm"
             v-model="openModalForm"
             :title="title"
-            @update="updateSnackbar"
         />
 
         <AdmCommonDialogDeleteItem
@@ -81,16 +81,6 @@
             :name="itemSelected.name"
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
-
-        <AdmCommonSnackbar
-            v-if="showSnackbar"
-            v-model="showSnackbar"
-            :title="titleSnackbar"
-            :subTitle="subTitleSnackbar"
-            :color="colorSnackbar"
-            :timeout="4000"
-            :icon="iconSnackbar"
-        ></AdmCommonSnackbar>
     </div>
 </template>
 
@@ -98,14 +88,18 @@
 <script setup>
 import { useResourcesStore } from "~/stores/adm/resources";
 import { useCommonStore } from "~/stores/common";
+import { useSnackbarStore } from "~/stores/snackbar";
 
 const resources = useResourcesStore();
 const common = useCommonStore();
+const snackbar = useSnackbarStore();
 
 const itemsPerPage = ref(10);
 
 const headers = [
+    { title: "ID", key: "id" },
     { title: "Nome", key: "name" },
+    { title: "Descrição", key: "description" },
     { title: "Ações", align: "center", sortable: false, key: "actions" },
 ];
 
@@ -115,28 +109,11 @@ const itemsPerPageOptions = [
     { value: 50, title: "50" },
 ];
 
-const title = ref(null);
-const openModalForm = ref(false);
-
-function openForm(type, itens) {
-    resources.formData = {};
-    resources.formData.address = {};
-    if (type === "store") {
-        title.value = "Cadastro Recurso";
-        resources.storeForm = true;
-    } else if (type === "update") {
-        title.value = "Editar Recurso";
-        resources.editForm = true;
-        resources.formData = itens;
-    }
-    openModalForm.value = true;
-}
-
 const isLoading = ref(false);
 const search = ref("");
 const searchTable = ref("");
 
-function loadItems({ page, itemsPerPage, sortBy }) {
+async function loadItems({ page, itemsPerPage, sortBy }) {
     isLoading.value = true;
 
     const paramsData = {
@@ -146,10 +123,6 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         search: searchTable.value ? searchTable.value : [],
     };
 
-    indexItem(paramsData);
-}
-
-async function indexItem(paramsData) {
     await resources.indexApiAction(paramsData);
     isLoading.value = false;
 }
@@ -158,25 +131,23 @@ function loadSearch() {
     searchTable.value = search.value;
 }
 
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
-const subTitleSnackbar = ref(null);
-const colorSnackbar = ref(null);
-const iconSnackbar = ref(null);
+const title = ref(null);
+const openModalForm = ref(false);
 
-function updateSnackbar(type, name) {
-    if (type === "store" || "edit") {
-        titleSnackbar.value = name;
-        if (type === "store") {
-            subTitleSnackbar.value = "Cadastrado com sucesso";
-        }
-        if (type === "edit") {
-            subTitleSnackbar.value = "Editado com sucesso";
-        }
-        colorSnackbar.value = "green";
-        iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
+function openForm(type, itens) {
+    resources.formData = {};
+    resources.storeForm = false;
+    resources.editForm = false;
+
+    if (type === "store") {
+        resources.storeForm = true;
+        title.value = "Cadastro Recurso";
+    } else if (type === "update") {
+        title.value = "Editar Recurso";
+        resources.editForm = true;
+        resources.formData = itens;
     }
-    showSnackbar.value = true;
+    openModalForm.value = true;
 }
 
 const itemSelected = ref(null);
@@ -188,13 +159,17 @@ function confirmDeleteItem(item) {
 async function deleteItem() {
     isLoading.value = true;
     await resources.destroyApiAction(itemSelected.value.id);
-
+    callSnackbar();
     isLoading.value = false;
-    showSnackbar.value = true;
-    titleSnackbar.value = itemSelected.value.name;
-    subTitleSnackbar.value = "Apagado com sucesso";
-    colorSnackbar.value = "red";
-    iconSnackbar.value = "mdi-checkbox-marked-circle-outline";
+}
+
+function callSnackbar() {
+    snackbar.show = true;
+    snackbar.title = itemSelected.value.name;
+    snackbar.subTitle = "Apagado com sucesso";
+    snackbar.color = "red";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>
 

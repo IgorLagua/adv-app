@@ -2,7 +2,11 @@
     <div>
         <v-card flat class="mt-3">
             <v-card-title class="d-flex align-center pe-2">
-                <v-btn @click="openForm('store')" color="blue">
+                <v-btn
+                    @click="openForm('store')"
+                    color="blue"
+                    v-if="hasPermission('company', 'store')"
+                >
                     Cadastrar
                 </v-btn>
 
@@ -43,7 +47,7 @@
                 </template>
 
                 <template v-slot:item.actions="{ item }">
-                    <v-tooltip text="Editar" location="top">
+                    <v-tooltip text="Editar" location="top" v-if="hasPermission('company', 'update')">
                         <template v-slot:activator="{ props }">
                             <!-- <pre>{{ item }}</pre> -->
                             <v-icon
@@ -56,7 +60,7 @@
                         </template>
                     </v-tooltip>
 
-                    <v-tooltip text="Apagar" location="top">
+                    <v-tooltip text="Apagar" location="top" v-if="hasPermission('company', 'delete')">
                         <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"
@@ -75,7 +79,7 @@
         <AdmCommonDialogDeleteItem
             v-if="common.showDialogDelete"
             :name="itemSelected.corporateName"
-	    @update="deleteItem"
+            @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
     </div>
 </template>

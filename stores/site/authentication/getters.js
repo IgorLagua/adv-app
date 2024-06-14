@@ -1,5 +1,10 @@
 const getters = {
 
+	// teste(state) {
+    //     if (state.token) {
+    //         state.acl = true
+    //     }
+    // },
 
 };
 

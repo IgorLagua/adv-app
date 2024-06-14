@@ -38,22 +38,11 @@
             :label="data.label"
             :rules="data.rules"
             :items="data.items"
-	    item-title="name"
-    	    item-value="value"
+            item-title="name"
+            item-value="value"
             v-model="currentValue"
             :error-messages="data.errorMensages"
         ></v-select>
-
-	<!-- <v-select
-            v-if="data.type === 'selectCustomValue'"
-            :label="data.label"
-            :rules="data.rules"
-            :items="data.items"
-	    item-title="name"
-    	    item-value="value"
-            v-model="currentValue"
-            :error-messages="data.errorMensages"
-        ></v-select> -->
 
         <v-text-field
             v-if="data.type === 'date'"
@@ -82,14 +71,15 @@
         ></v-textarea>
 
         <v-text-field
-			v-if="data.type === 'password'"
+            v-if="data.type === 'password'"
             :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
             :type="showPassword ? 'text' : 'password'"
             placeholder="Senha"
             prepend-inner-icon="mdi-lock-outline"
             @click:append-inner="showPassword = !showPassword"
             v-model="currentValue"
-			:rules="data.rules"
+            :rules="data.rules"
+			:error-messages="data.errorMensages"
         ></v-text-field>
     </div>
 </template>
@@ -124,7 +114,6 @@ watch(currentValue, () => {
 });
 
 const showPassword = ref(false);
-
 
 const emit = defineEmits(["update"]);
 

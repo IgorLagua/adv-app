@@ -8,26 +8,17 @@
 
                 <v-form v-model="isValid">
                     <v-card-text class="pb-0">
-                        <v-col cols="12">
-                            <v-text-field
-                                placeholder="Nome"
-                                label="Nome"
-                                v-model="permissions.formData.name"
-                                :rules="[
-                                    requiredValidation({
-                                        name: 'A permissão',
-                                    }),
-                                    minLengthValidation({
-                                        name: 'A permissão',
-                                        number: 3,
-                                    }),
-                                    maxLengthValidation({
-                                        name: 'A permissão',
-                                        number: 70,
-                                    }),
-                                ]"
-                            >
-                            </v-text-field>
+                        <v-col
+                            v-for="data in dataFieldsRequired"
+                            :key="data.label"
+                            :cols="data.cols"
+                            :sm="data.sm"
+                            :md="data.md"
+                        >
+                            <AdmCommonFormDefault
+                                :data="data"
+                                v-model="permissions.formData[data.key]"
+                            />
                         </v-col>
                     </v-card-text>
 
@@ -44,7 +35,7 @@
                         <v-btn
                             min-width="100"
                             variant="tonal"
-                            @click="closeForm"
+                            @click="openModalForm = false"
                         >
                             Fechar
                         </v-btn>
@@ -67,7 +58,10 @@
 
 <script setup>
 import { usePermissionsStore } from "~/stores/adm/permissions";
+import { useSnackbarStore } from "~/stores/snackbar";
+
 const permissions = usePermissionsStore();
+const snackbar = useSnackbarStore();
 
 const isLoading = ref(false);
 
@@ -79,13 +73,8 @@ const props = defineProps({
 
 const isValid = ref(false);
 
-// Validações dos inputs --> vem da pasta composables
-const { requiredValidation, minLengthValidation, maxLengthValidation } =
-    useValidation();
-
-// const { updateErrorMessages } = useApiErrorMessages();
-
-const emit = defineEmits(["update"]);
+// Dados dos inputs com Validações --> vem da pasta composables/useDataPermission
+const dataFieldsRequired = ref(permissionFieldsRequired());
 
 async function saveButton() {
     if (isValid.value) {
@@ -97,37 +86,37 @@ async function saveButton() {
             });
 
             if (Object.keys(permissions.apiErrors).length === 0) {
-                emit("update", "store", permissions.formData.name);
+                callSnackbar("Criado com sucesso");
             } 
 			
-			// else {
-            //     // Se existe erro no retorno da API
-            //     // Atualizar mensagens de erro nos inputs com base nos erros da API
-            //     updateErrorMessages(permissions.apiErrors, datas.value);
-            //     isLoading.value = false;
-            //     return;
-            // }
+			else {
+                // Se existe erro no retorno da API
+                // Atualizar mensagens de erro nos inputs com base nos erros da API
+                updateErrorMessages(permissions.apiErrors, dataFieldsRequired.value);
+                isLoading.value = false;
+                return;
+            }
         } else if (permissions.editForm) {
             await permissions.updateApiAction({
                 ...permissions.formData,
             });
 
             if (Object.keys(permissions.apiErrors).length === 0) {
-                emit("update", "edit", permissions.formData.name);
+                callSnackbar("Modificado com sucesso");
             } 
 			
-			// else {
-            //     // se existe erro no retorno da API
-            //     // Atualizar mensagens de erro nos inputs com base nos erros da API
-            //     updateErrorMessages(permissions.apiErrors, datas.value);
-            //     isLoading.value = false;
-            //     return;
-            // }
+			else {
+                // se existe erro no retorno da API
+                // Atualizar mensagens de erro nos inputs com base nos erros da API
+                updateErrorMessages(permissions.apiErrors, dataFieldsRequired.value);
+                isLoading.value = false;
+                return;
+            }
         }
 
         isLoading.value = false;
 
-        closeForm();
+		openModalForm.value = false;
         clearForm();
     }
 }
@@ -136,10 +125,14 @@ function clearForm() {
     permissions.formData = {};
 }
 
-function closeForm() {
-    permissions.storeForm = false;
-    permissions.editForm = false;
-    openModalForm.value = false;
+function callSnackbar(subTitle) {
+    snackbar.show = true;
+    snackbar.title = permissions.formData.name;
+    snackbar.subTitle = subTitle;
+    snackbar.color = "green";
+    snackbar.timeout = 5000;
+    snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
+
 </script>
 

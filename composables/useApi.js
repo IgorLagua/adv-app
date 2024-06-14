@@ -18,24 +18,19 @@ export async function useApi(endpoint, options = {}) {
 		headers: {
 			'Content-Type': 'application/json',
 			'Accept': 'application/json',
-			// 'Authorization': authentication.value?.token ? `Bearer ${authentication.value.token}` : null,
-			// 'tenantIds': authentication.value?.tenantIds,
 			'Authorization': authentication.token ? `Bearer ${authentication.token}` : null,
-			'tenantIds': authentication.tenantIds,
-
+			...(authentication.tenants?.length > 1 && { 'tenantIds': authentication.tenantIds }),
 		},
-		...options, // Mesclar opções passadas com as configurações padrão
-		// onResponseError({ response }) {
-		// 	errorValue = response._data;
-		// },
 	};
 
+	const mergeOptions = deepMerge(defaultOptions, options);
+
 	// Preparar a URL com os parâmetros de query
-	let url = new URL(endpoint, defaultOptions.baseUrl);
+	let url = new URL(endpoint, mergeOptions.baseUrl);
 
 	try {
 		// Tente fazer a chamada com $fetch
-		data = await $fetch(url.href, defaultOptions);
+		data = await $fetch(url.href, mergeOptions);
 		// status = true
 		// Se a chamada for bem-sucedida, processe os dados
 		// console.log('Dados recebidos:', data);

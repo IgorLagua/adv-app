@@ -125,7 +125,7 @@ const actions = {
 
 
 	async updateApiAction(formData) {
-console.log('formData', formData);
+// console.log('formData', formData);
 		// const formDataClone = deepClone(formData);
 
 		// // Remover pontos e traço do CPF
