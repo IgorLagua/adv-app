@@ -99,10 +99,10 @@ const {
 } = useValidation();
 
 const formData = ref({
-    email: "igor.lagua@hotmail.com",
-    password: "password",
-    // email: null,
-    // password: null,
+    // email: "igor.lagua@hotmail.com",
+    // password: "password",
+    email: null,
+    password: null,
 });
 const showPassword = ref(false);
 const formIsValid = ref(false);
