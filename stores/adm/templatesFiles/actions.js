@@ -40,6 +40,10 @@ const actions = {
 			const endpoint = "template_files";
 			const options = {
 				query: paramsData,
+				headers: {
+					resourceName: "template",
+					permissionName: "index"
+				}
 			};
 
 			const { data } = await useApi(endpoint, options);
@@ -82,8 +86,14 @@ const actions = {
 		else {
 
 			const endpoint = `template_files/${id}`;
+			const options = {
+				headers: {
+					resourceName: "customer",
+					permissionName: "show"
+				}
+			};
 
-			const { data } = await useApi(endpoint);
+			const { data, error } = await useApi(endpoint, options);
 
 			if (data) {
 				this.apiErrors = {}
@@ -104,7 +114,11 @@ const actions = {
 		const endpoint = "template_files";
 		const options = {
 			method: 'POST',
-			body: formData
+			body: formData,
+			headers: {
+				resourceName: "template",
+				permissionName: "store"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -120,12 +134,16 @@ const actions = {
 		}
 	},
 
-	async updateApiAction(formData) {
-
+	async updateApiAction(formData, permission) {
+// console.log('formData', formData);
 		const endpoint = `template_files/${formData.id}`;
 		const options = {
 			method: 'PUT',
-			body: formData
+			body: formData,
+			headers: {
+				resourceName: "template",
+				permissionName: permission  	
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -148,6 +166,10 @@ const actions = {
 
 		const options = {
 			method: 'DELETE',
+			headers: {
+				resourceName: "template",
+				permissionName: "delete"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);

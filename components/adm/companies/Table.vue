@@ -47,7 +47,11 @@
                 </template>
 
                 <template v-slot:item.actions="{ item }">
-                    <v-tooltip text="Editar" location="top" v-if="hasPermission('company', 'update')">
+                    <v-tooltip
+                        text="Editar"
+                        location="top"
+                        v-if="hasPermission('company', 'update')"
+                    >
                         <template v-slot:activator="{ props }">
                             <!-- <pre>{{ item }}</pre> -->
                             <v-icon
@@ -60,7 +64,11 @@
                         </template>
                     </v-tooltip>
 
-                    <v-tooltip text="Apagar" location="top" v-if="hasPermission('company', 'delete')">
+                    <v-tooltip
+                        text="Apagar"
+                        location="top"
+                        v-if="hasPermission('company', 'delete')"
+                    >
                         <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"

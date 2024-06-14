@@ -14,7 +14,11 @@
             </v-sheet>
         </template>
         <template v-slot:append>
-            <v-btn color="blue-darken-1" @click="$emit('openDialog')">
+            <v-btn
+                color="blue-darken-1"
+                @click="$emit('openDialog')"
+                v-if="hasPermission('template', 'store')"
+            >
                 Cadastro
             </v-btn>
         </template>

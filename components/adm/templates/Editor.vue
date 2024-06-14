@@ -20,11 +20,12 @@
         </div>
 
         <v-btn
+            v-if="hasPermission('template', 'store')"
             :disabled="viewEditModeButton"
             :loading="isLoading"
             color="blue"
             class="mt-4"
-            @click="saveData"
+            @click="saveButton"
             >Salvar</v-btn
         >
 
@@ -105,12 +106,8 @@ const editorConfig = ref({
     templates: [],
 });
 
-
 const showButtonsEditor = computed(() => {
-    const {
-        peopleSelected,
-        companiesSelected,
-    } = templatesFiles.selected;
+    const { peopleSelected, companiesSelected } = templatesFiles.selected;
 
     return peopleSelected.length > 0 || companiesSelected.length > 0;
 });
@@ -143,14 +140,23 @@ watchEffect(() => {
 });
 
 const isLoading = ref(false);
-// const saveData = () => {
-async function saveData() {
+// const saveButton = () => {
+async function saveButton() {
+    isLoading.value = true;
     templatesFiles.selected.content = templatesFiles.content;
 
-    isLoading.value = true;
-    await templatesFiles.updateApiAction(templatesFiles.selected);
-    updateSnackbar();
-    await sleep(1000);
+    await templatesFiles.updateApiAction(templatesFiles.selected, 'store');
+
+    if (Object.keys(templatesFiles.apiErrors).length === 0) {
+        updateSnackbar();
+    } else {
+        // Se existe erro no retorno da API
+        // Atualizar mensagens de erro nos inputs com base nos erros da API
+        // updateErrorMessages(users.apiErrors, dataFieldsRequired.value);
+        isLoading.value = false;
+        return;
+    }
+    // await sleep(1000);
     isLoading.value = false;
 }
 

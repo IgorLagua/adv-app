@@ -40,9 +40,13 @@ const actions = {
 			const endpoint = "template_categories";
 			const options = {
 				query: paramsData,
+				headers: {
+					resourceName: "template",
+					permissionName: "index"
+				}
 			};
 
-			const { data } = await useApi(endpoint, options);
+			const { data, error } = await useApi(endpoint, options);
 
 			// Se AutoComplete
 			if (!templates.showDialog) {
@@ -73,7 +77,11 @@ const actions = {
 		const endpoint = "template_categories";
 		const options = {
 			method: 'POST',
-			body: formData
+			body: formData,
+			headers: {
+				resourceName: "template",
+				permissionName: "store"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -94,7 +102,11 @@ const actions = {
 		const endpoint = `template_categories/${formData.id}`;
 		const options = {
 			method: 'PUT',
-			body: formData
+			body: formData,
+			headers: {
+				resourceName: "template",
+				permissionName: "update"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -116,11 +128,13 @@ const actions = {
 
 		const options = {
 			method: 'DELETE',
+			headers: {
+				resourceName: "template",
+				permissionName: "delete"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
-
-
 
 		if (data) {
 			this.apiErrors = {}

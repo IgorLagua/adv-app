@@ -42,7 +42,11 @@
                 height="320"
             >
                 <template v-slot:item.actions="{ item }">
-                    <v-tooltip text="Editar" location="top">
+                    <v-tooltip
+                        text="Editar"
+                        location="top"
+                        v-if="hasPermission('template', 'update')"
+                    >
                         <template v-slot:activator="{ props }">
                             <!-- <pre>{{ item }}</pre> -->
                             <v-icon
@@ -55,7 +59,11 @@
                         </template>
                     </v-tooltip>
 
-                    <v-tooltip text="Apagar" location="top">
+                    <v-tooltip
+                        text="Apagar"
+                        location="top"
+                        v-if="hasPermission('template', 'delete')"
+                    >
                         <template v-slot:activator="{ props }">
                             <v-icon
                                 v-bind="props"
@@ -214,15 +222,15 @@ const confirmDeleteItem = (item) => {
 async function deleteItem() {
     isLoading.value = true;
 
-	if (templates.nameDialog === "Categoria") {
-    	await templatesCategories.destroyApiAction(itemDelete.value.id);
-	}
+    if (templates.nameDialog === "Categoria") {
+        await templatesCategories.destroyApiAction(itemDelete.value.id);
+    }
 
-	if (templates.nameDialog === "Modelo") {
-    	await templatesFiles.destroyApiAction(itemDelete.value.id);
-	}
+    if (templates.nameDialog === "Modelo") {
+        await templatesFiles.destroyApiAction(itemDelete.value.id);
+    }
 
-	callSnackbar();
+    callSnackbar();
 
     isLoading.value = false;
 }

@@ -92,143 +92,143 @@ const datas = ref([
 
 const { updateErrorMessages } = useApiErrorMessages();
 
-// async function saveButton() {
-//     if (isValid.value) {
-//         isLoading.value = true;
-
-//         if (templates.storeForm) {
-//             if (templates.nameDialog === "Categoria") {
-//                 await templatesCategories.storeApiAction({
-//                     ...templates.formData,
-//                 });
-
-//                 if (Object.keys(templatesCategories.apiErrors).length === 0) {
-//                     emit("update", "store", templates.formData.name);
-//                 } else {
-//                     // Se existe erro no retorno da API
-//                     // Atualizar mensagens de erro nos inputs com base nos erros da API
-//                     updateErrorMessages(
-//                         templatesCategories.apiErrors,
-//                         datas.value
-//                     );
-//                     isLoading.value = false;
-//                     return;
-//                 }
-//             } else if (templates.nameDialog === "Modelo") {
-//                 templates.formData.template_categories_id = templatesCategories.selected.id
-                
-// 				await templatesFiles.storeApiAction({
-//                     ...templates.formData,
-//                 });
-
-//                 if (Object.keys(templatesFiles.apiErrors).length === 0) {
-//                     emit("update", "store", templates.formData.name);
-//                 } else {
-//                     // Se existe erro no retorno da API
-//                     // Atualizar mensagens de erro nos inputs com base nos erros da API
-//                     updateErrorMessages(templatesFiles.apiErrors, datas.value);
-//                     isLoading.value = false;
-//                     return;
-//                 }
-//             }
-//         } else if (templates.editForm) {
-//             if (templates.nameDialog === "Categoria") {
-//                 await templatesCategories.updateApiAction({
-//                     ...templates.formData,
-//                 });
-
-//                 if (Object.keys(templatesCategories.apiErrors).length === 0) {
-//                     emit("update", "edit", templates.formData.name);
-//                 } else {
-//                     // se existe erro no retorno da API
-//                     // Atualizar mensagens de erro nos inputs com base nos erros da API
-//                     updateErrorMessages(
-//                         templatesCategories.apiErrors,
-//                         datas.value
-//                     );
-//                     isLoading.value = false;
-//                     return;
-//                 }
-//             } else if (templates.nameDialog === "Modelo") {
-// 				templates.formData.template_categories_id = templatesCategories.selected.id
-				
-//                 await templatesFiles.updateApiAction({
-//                     ...templates.formData,
-//                 });
-
-//                 if (Object.keys(templatesFiles.apiErrors).length === 0) {
-//                     emit("update", "edit", templates.formData.name);
-//                 } else {
-//                     // se existe erro no retorno da API
-//                     // Atualizar mensagens de erro nos inputs com base nos erros da API
-//                     updateErrorMessages(
-//                         templatesFiles.apiErrors,
-//                         datas.value
-//                     );
-//                     isLoading.value = false;
-//                     return;
-//                 }
-//             }
-//         }
-
-//         isLoading.value = false;
-
-//         closeForm();
-//         clearForm();
-//     }
-// }
-
-
 async function saveButton() {
-    // Verifica se o formulário é válido
-    if (!isValid.value) return;
+    if (isValid.value) {
+        isLoading.value = true;
 
-    // Define o estado de carregamento como verdadeiro
-    isLoading.value = true;
+        if (templates.storeForm) {
+            if (templates.nameDialog === "Categoria") {
+                await templatesCategories.storeApiAction({
+                    ...templates.formData,
+                });
 
-    // Declaração das variáveis para a ação da API e erros da API
-    let apiAction, apiErrors;
+                if (Object.keys(templatesCategories.apiErrors).length === 0) {
+                    emit("update", "store", templates.formData.name);
+                } else {
+                    // Se existe erro no retorno da API
+                    // Atualizar mensagens de erro nos inputs com base nos erros da API
+                    updateErrorMessages(
+                        templatesCategories.apiErrors,
+                        datas.value
+                    );
+                    isLoading.value = false;
+                    return;
+                }
+            } else if (templates.nameDialog === "Modelo") {
+                templates.formData.template_categories_id = templatesCategories.selected.id
+                
+				await templatesFiles.storeApiAction({
+                    ...templates.formData,
+                });
 
-    // Verifica se o diálogo é para "Categoria"
-    const isCategory = templates.nameDialog === "Categoria";
-    // Verifica se o formulário é de criação
-    const isStore = templates.storeForm;
+                if (Object.keys(templatesFiles.apiErrors).length === 0) {
+                    emit("update", "store", templates.formData.name);
+                } else {
+                    // Se existe erro no retorno da API
+                    // Atualizar mensagens de erro nos inputs com base nos erros da API
+                    updateErrorMessages(templatesFiles.apiErrors, datas.value);
+                    isLoading.value = false;
+                    return;
+                }
+            }
+        } else if (templates.editForm) {
+            if (templates.nameDialog === "Categoria") {
+                await templatesCategories.updateApiAction({
+                    ...templates.formData,
+                });
 
-    // Define a ação da API e erros da API com base no tipo de diálogo e operação
-    if (isCategory) {
-        apiAction = isStore ? templatesCategories.storeApiAction : templatesCategories.updateApiAction;
-        apiErrors = templatesCategories.apiErrors;
-    } else {
-        // Para "Modelo", define o ID da categoria do template
-        templates.formData.template_categories_id = templatesCategories.selected.id;
-        apiAction = isStore ? templatesFiles.storeApiAction : templatesFiles.updateApiAction;
-        apiErrors = templatesFiles.apiErrors;
-    }
+                if (Object.keys(templatesCategories.apiErrors).length === 0) {
+                    emit("update", "edit", templates.formData.name);
+                } else {
+                    // se existe erro no retorno da API
+                    // Atualizar mensagens de erro nos inputs com base nos erros da API
+                    updateErrorMessages(
+                        templatesCategories.apiErrors,
+                        datas.value
+                    );
+                    isLoading.value = false;
+                    return;
+                }
+            } else if (templates.nameDialog === "Modelo") {
+				templates.formData.template_categories_id = templatesCategories.selected.id
+				
+                await templatesFiles.updateApiAction({
+                    ...templates.formData
+                }, "update");
 
-    // Executa a ação da API com os dados do formulário
-    await apiAction({ ...templates.formData });
+                if (Object.keys(templatesFiles.apiErrors).length === 0) {
+                    emit("update", "edit", templates.formData.name);
+                } else {
+                    // se existe erro no retorno da API
+                    // Atualizar mensagens de erro nos inputs com base nos erros da API
+                    updateErrorMessages(
+                        templatesFiles.apiErrors,
+                        datas.value
+                    );
+                    isLoading.value = false;
+                    return;
+                }
+            }
+        }
 
-    // Verifica se não há erros na API
-    if (Object.keys(apiErrors).length === 0) {
-        // Determina a operação (store ou edit) e emite o evento de atualização
-        const subTitle = isStore ? "Cadastrado com sucesso" : "Editado com sucesso";
-		callSnackbar(subTitle);
-        // emit("update", operation, templates.formData.name);		// todo Colocar aqui o novo Snackbar 
-    } else {
-        // Se houver erros, atualiza as mensagens de erro nos inputs
-        updateErrorMessages(apiErrors, datas.value);
-        // Define o estado de carregamento como falso e retorna
         isLoading.value = false;
-        return;
+
+        closeForm();
+        clearForm();
     }
-
-    // Define o estado de carregamento como falso
-    isLoading.value = false;
-
-    // Fecha o formulário e limpa os dados do formulário
-    closeForm();
-    clearForm();
 }
+
+
+// async function saveButton() {
+//     // Verifica se o formulário é válido
+//     if (!isValid.value) return;
+
+//     // Define o estado de carregamento como verdadeiro
+//     isLoading.value = true;
+
+//     // Declaração das variáveis para a ação da API e erros da API
+//     let apiAction, apiErrors;
+
+//     // Verifica se o diálogo é para "Categoria"
+//     const isCategory = templates.nameDialog === "Categoria";
+//     // Verifica se o formulário é de criação
+//     const isStore = templates.storeForm;
+
+//     // Define a ação da API e erros da API com base no tipo de diálogo e operação
+//     if (isCategory) {
+//         apiAction = isStore ? templatesCategories.storeApiAction : templatesCategories.updateApiAction;
+//         apiErrors = templatesCategories.apiErrors;
+//     } else {
+//         // Para "Modelo", define o ID da categoria do template
+//         templates.formData.template_categories_id = templatesCategories.selected.id;
+//         apiAction = isStore ? templatesFiles.storeApiAction : templatesFiles.updateApiAction;
+//         apiErrors = templatesFiles.apiErrors;
+//     }
+
+//     // Executa a ação da API com os dados do formulário
+//     await apiAction({ ...templates.formData });
+
+//     // Verifica se não há erros na API
+//     if (Object.keys(apiErrors).length === 0) {
+//         // Determina a operação (store ou edit) e emite o evento de atualização
+//         const subTitle = isStore ? "Cadastrado com sucesso" : "Editado com sucesso";
+// 		callSnackbar(subTitle);
+//         // emit("update", operation, templates.formData.name);		// todo Colocar aqui o novo Snackbar 
+//     } else {
+//         // Se houver erros, atualiza as mensagens de erro nos inputs
+//         updateErrorMessages(apiErrors, datas.value);
+//         // Define o estado de carregamento como falso e retorna
+//         isLoading.value = false;
+//         return;
+//     }
+
+//     // Define o estado de carregamento como falso
+//     isLoading.value = false;
+
+//     // Fecha o formulário e limpa os dados do formulário
+//     closeForm();
+//     clearForm();
+// }
 
 function clearForm() {
     templates.formData = {};
