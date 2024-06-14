@@ -2,153 +2,6 @@ import { useAuthenticationStore } from "~/stores/site/authentication";
 
 const actions = {
 
-	// initializeFieldConfigMandatory(
-	// 	requiredValidation,
-	// 	equalLengthValidation,
-	// 	minLengthValidation,
-	// 	maxLengthValidation,
-	// 	cnpjValidation,
-	// 	cnpjMask,
-	// 	loadingCnpj,
-	// ) {
-
-	// 	this.fieldConfigMandatory = [
-
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 4,
-	// 			type: "template",
-	// 			label: "CNPJ",
-	// 			errorMensages: null,
-	// 			rules: [
-	// 				requiredValidation({ name: "O CNPJ" }),
-	// 				equalLengthValidation({ name: "O CNPJ", number: 18 }),
-	// 				cnpjValidation({ name: "O CNPJ" }),
-	// 			],
-	// 			key: "cnpj",
-	// 			mask: cnpjMask,
-	// 			maxLength: 18,
-	// 			loading: loadingCnpj,
-
-	// 		},
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 4,
-	// 			type: "text",
-	// 			label: "Razão social",
-	// 			errorMensages: null,
-	// 			rules: [
-	// 				requiredValidation({ name: "A razão social" }),
-	// 				minLengthValidation({ name: "A razão social", number: 2 }),
-	// 				maxLengthValidation({ name: "A razão social", number: 70 }),
-	// 			],
-	// 			key: "corporateName",
-	// 		},
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 4,
-	// 			type: "text",
-	// 			label: "Nome fantasia",
-	// 			errorMensages: null,
-	// 			rules: [
-	// 				minLengthValidation({ name: "O nome fantasia", number: 2 }),
-	// 				maxLengthValidation({ name: "O nome fantasia", number: 70 }),
-	// 			],
-	// 			key: "fantasyName",
-	// 		},
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 4,
-	// 			type: "select",
-	// 			label: "Tipo",
-	// 			errorMensages: null,
-	// 			rules: [requiredValidation({ name: "O Tipo" })],
-	// 			items: ["Matriz", "Filial"],
-	// 			key: "type",
-	// 		},
-
-	// 		{
-	// 			cols: 12,
-	// 			sm: 8,
-	// 			md: 8,
-	// 			// type: "autocomplete",
-	// 			// label: "Representante Legal",
-	// 			// errorMensages: null,
-	// 			// rules: [
-	// 			// ],
-	// 			// items: customers.data,
-	// 			key: "customerId",
-	// 		},
-
-	// 	];
-	// },
-
-	// initializeFieldConfigOptional(
-	// 	emailValidation,
-	// 	minLengthValidation,
-	// 	maxLengthValidation,
-	// ) {
-
-	// 	this.fieldConfigOptional = [
-
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 4,
-	// 			type: "text",
-	// 			label: "E-mail",
-	// 			errorMensages: null,
-	// 			rules: [emailValidation({ name: "O e-mail" })],
-	// 			key: "email",
-	// 		},
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 2,
-	// 			type: "text",
-	// 			label: "NIRE",
-	// 			errorMensages: null,
-	// 			rules: [
-	// 				minLengthValidation({ name: "O NIRE", number: 7 }),
-	// 				maxLengthValidation({ name: "O NIRE", number: 12 }),
-	// 			],
-	// 			key: "nire",
-	// 		},
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 2,
-	// 			type: "text",
-	// 			label: "Inscrição Municipal",
-	// 			errorMensages: null,
-	// 			rules: [
-	// 				minLengthValidation({ name: "A inscrição municipal", number: 7 }),
-	// 				maxLengthValidation({ name: "A inscrição municipal", number: 12 }),
-	// 			],
-	// 			key: "municipalRegistration",
-	// 		},
-	// 		{
-	// 			cols: 12,
-	// 			sm: 6,
-	// 			md: 2,
-	// 			type: "text",
-	// 			label: "Inscrição Estadual",
-	// 			errorMensages: null,
-	// 			rules: [
-	// 				minLengthValidation({ name: "A inscrição estadual", number: 7 }),
-	// 				maxLengthValidation({ name: "A inscrição estadual", number: 12 }),
-	// 			],
-	// 			key: "stateRegistration",
-	// 		},
-
-	// 	];
-	// },
-
-
 	async indexApiAction(paramsData) {
 
 		const authentication = useAuthenticationStore();
@@ -165,6 +18,10 @@ const actions = {
 			const endpoint = "companies";
 			const options = {
 				query: paramsData,
+				headers: {
+					resourceName: "company",
+					permissionName: "index"
+				}
 			};
 
 			const { data } = await useApi(endpoint, options);
@@ -182,7 +39,7 @@ const actions = {
 	},
 
 
-	// Quando procua dados pelo AutoComplete
+	// Quando procua dados pelo AutoComplete --> usado no Modelo Padrão
 	async indexAutoCompleteApiAction(paramsData) {
 
 		const authentication = useAuthenticationStore();
@@ -198,6 +55,10 @@ const actions = {
 			const endpoint = "companies";
 			const options = {
 				query: paramsData,
+				headers: {
+					resourceName: "company",
+					permissionName: "index"
+				}
 			};
 
 			const { data } = await useApi(endpoint, options);
@@ -233,7 +94,11 @@ const actions = {
 		const endpoint = "companies";
 		const options = {
 			method: 'POST',
-			body: formDataClone
+			body: formDataClone,
+			headers: {
+				resourceName: "company",
+				permissionName: "store"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -257,8 +122,14 @@ const actions = {
 	async showApiAction(id) {
 
 		const endpoint = `companies/${id}`;
+		const options = {
+			headers: {
+				resourceName: "company",
+				permissionName: "show"
+			}
+		};
 
-		const { data } = await useApi(endpoint);
+		const { data, error } = await useApi(endpoint, options);
 
 		if (data) {
 
@@ -287,8 +158,14 @@ const actions = {
 			return; // Retorna se os dados já existem
 		} else {
 			const endpoint = `companies/${companyId}`;
+			const options = {
+				headers: {
+					resourceName: "company",
+					permissionName: "show"
+				}
+			};
 
-			const { data } = await useApi(endpoint);
+			const { data, error } = await useApi(endpoint, options);
 
 			if (data) {
 				this.apiErrors = {}
@@ -315,7 +192,11 @@ const actions = {
 		const endpoint = `companies/${formDataClone.id}`;
 		const options = {
 			method: 'PUT',
-			body: formDataClone
+			body: formDataClone,
+			headers: {
+				resourceName: "company",
+				permissionName: "update"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);
@@ -340,6 +221,10 @@ const actions = {
 
 		const options = {
 			method: 'DELETE',
+			headers: {
+				resourceName: "company",
+				permissionName: "delete"
+			}
 		};
 
 		const { data, error } = await useApi(endpoint, options);

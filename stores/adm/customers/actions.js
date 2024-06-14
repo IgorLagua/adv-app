@@ -1,6 +1,5 @@
 import { useAuthenticationStore } from "~/stores/site/authentication";
 
-
 const actions = {
 
 	async indexApiAction(paramsData) {
