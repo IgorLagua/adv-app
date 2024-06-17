@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center pa-4">
+    <div class="text-center pa-4" v-if="!authentication.logoutIsLoading">
         <v-dialog
             v-model="common.showDialogErrorApi"
             max-width="400"
@@ -21,10 +21,10 @@
 
 
 <script setup>
-// import { useAuthenticationStore } from "~/stores/site/authentication";
+import { useAuthenticationStore } from "~/stores/site/authentication";
 import { useCommonStore } from "~/stores/common";
 
-// const authentication = useAuthenticationStore();
+const authentication = useAuthenticationStore();
 const common = useCommonStore();
 
 async function goBack() {
@@ -35,7 +35,6 @@ async function goBack() {
     if (common.actionText === "Voltar") {
         navigateTo("/adm");
     }
-	common.showDialogErrorApi = false;
-    
+    common.showDialogErrorApi = false;
 }
 </script>

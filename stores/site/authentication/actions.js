@@ -37,7 +37,6 @@ const actions = {
 			method: 'POST',
 		};
 
-		this.logoutIsLoading = true
 		const { data, error } = await useApi(endpoint, options);
 
 		// console.log('data', data);
@@ -49,7 +48,6 @@ const actions = {
 			this.tenantIds = []
 			this.isAuthenticated = false
 			this.apiErrors = {}
-			this.logoutIsLoading = false
 		// }
 
 	},

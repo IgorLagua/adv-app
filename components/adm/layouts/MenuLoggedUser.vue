@@ -77,10 +77,10 @@ function openForm() {
 }
 
 async function logOut() {
-	
+	authentication.logoutIsLoading = true
     await authentication.logOutAction();
-
-    // router.push("/site/login/");
+// await sleep(3000)
 	navigateTo("/site/login");
+	authentication.logoutIsLoading = false
 }
 </script>
