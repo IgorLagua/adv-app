@@ -6,7 +6,7 @@
                     headline="Whoops, erro"
                     title="Usuário não Autenticado"
                     text="A autenticação expirou ou outro usuário está autenticado com seus dados em uma sessão diferente."
-                    image="https://upload.wikimedia.org/wikipedia/commons/2/27/Alert-Stop-Warning-Error_icon.svg"
+                    image="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Alert-Stop-Warning-Error_icon.svg/240px-Alert-Stop-Warning-Error_icon.svg.png"
 					action-text="Autenticar"
 					@click:action="goToLogin"
 				></v-empty-state>

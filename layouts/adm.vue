@@ -40,7 +40,7 @@
                 <slot />
             </v-container>
 
-            <AdmCommonDialogError v-model="dialogErrorApi" />
+            <AdmCommonDialogErrors v-model="common.showDialogErrorApi" />
 
             <AdmCommonSnackbar
                 v-if="snackbar.show"
@@ -57,22 +57,15 @@
 
 <script setup>
 import { useAuthenticationStore } from "~/stores/site/authentication";
+import { useCommonStore } from "~/stores/common";
 import { useSnackbarStore } from "~/stores/snackbar";
 
 const authentication = useAuthenticationStore();
+const common = useCommonStore();
 const snackbar = useSnackbarStore();
 
 const drawer = ref(true);
 
-const dialogErrorApi = ref(false);
 
-watch(
-    () => authentication.isAuthenticated,
-    (newVal, oldVal) => {
-        if (!newVal && !authentication.logoutIsLoading) {
-            dialogErrorApi.value = true;
-        }
-    }
-);
 </script>
 

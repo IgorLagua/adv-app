@@ -48,25 +48,31 @@ const actions = {
 
 			const { data, error } = await useApi(endpoint, options);
 
-			// Se AutoComplete
-			if (!templates.showDialog) {
-				this.dataStoreAutoComplete.push({
-					data: data.data,
-					paramsData,
-				});
-				this.dataAutoComplete = data.data;
+			if (data) {
+				// Se AutoComplete
+				if (!templates.showDialog) {
+					this.dataStoreAutoComplete.push({
+						data: data.data,
+						paramsData,
+					});
+					this.dataAutoComplete = data.data;
+				}
+
+				// Se tabela
+				else {
+					this.dataStoreTable.push({
+						data: data.data,
+						totalItems: data.meta.total,
+						paramsData,
+					});
+					this.dataTable = data.data;
+					this.totalItems = data.meta.total;
+
+				}
 			}
 
-			// Se tabela
 			else {
-				this.dataStoreTable.push({
-					data: data.data,
-					totalItems: data.meta.total,
-					paramsData,
-				});
-				this.dataTable = data.data;
-				this.totalItems = data.meta.total;
-
+				this.apiErrors = error
 			}
 
 		}

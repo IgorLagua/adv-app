@@ -49,10 +49,14 @@ export async function useApi(endpoint, options = {}) {
 		// console.log('Erro ao fazer a requisição:', errors);
 		// }
 
-
-		if (error.message === 'Unauthenticated.') {
-			authentication.isAuthenticated = false
+		if ( error ) {
+			errorsApi(error)	//Chama a função errorsApi e passa como parâmetro "error" em utils
 		}
+
+
+		// if (error.message === 'Unauthenticated.') {
+		// 	authentication.isAuthenticated = false
+		// }
 	}
 
 	// Retornar os resultados e métodos de controle
