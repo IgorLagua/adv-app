@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-row justify="center">
+        <div class="text-center">
             <v-dialog v-model="companies.openModalForm">
                 <v-card>
                     <v-card-title>
@@ -16,192 +16,163 @@
                         :height="6"
                     ></v-progress-linear>
 
-                    <v-stepper v-model="step" :items="itemsStep">
-                        <template v-slot:item.1>
-                            <h3 class="text-h6">
-                                Cadastro dos Itens Obrigatórios
-                            </h3>
+                    <div>
+                        <v-stepper v-model="step" :items="itemsStep">
+                            <template v-slot:item.1>
+                                <h3 class="text-h6">
+                                    Cadastro dos Itens Obrigatórios
+                                </h3>
 
-                            <br />
+                                <br />
 
-                            <v-form ref="form1">
-                                <v-row>
-                                    <v-col
-                                        v-for="data in companyDataRequired"
-                                        :key="data.label"
-                                        :cols="data.cols"
-                                        :sm="data.sm"
-                                        :md="data.md"
-                                    >
-                                        <AdmCommonFormDefault
-                                            :data="data"
-                                            v-model="
-                                                companies.formData[data.key]
-                                            "
-                                            @update="updateCompany"
-                                        />
-
-                                        <v-autocomplete
-                                            v-if="data.key === 'customerId'"
-                                            label="Represente legal"
-                                            :items="customers.data"
-                                            no-filter
-                                            item-title="name"
-                                            item-value="id"
-                                            :loading="customerIsLoading"
-                                            @update:search="customerFilter"
-                                            v-model="
-                                                companies.formData.customerId
-                                            "
-                                            auto-select-first
+                                <v-form ref="form1">
+                                    <v-row>
+                                        <v-col
+                                            v-for="data in companyDataRequired"
+                                            :key="data.label"
+                                            :cols="data.cols"
+                                            :sm="data.sm"
+                                            :md="data.md"
                                         >
-                                            <template
-                                                v-slot:item="{ props, item }"
+                                            <AdmCommonFormDefault
+                                                :data="data"
+                                                v-model="
+                                                    companies.formData[data.key]
+                                                "
+                                                @update="updateCompany"
+                                            />
+
+                                            <v-autocomplete
+                                                v-if="data.key === 'customerId'"
+                                                label="Represente legal"
+                                                :items="customers.data"
+                                                no-filter
+                                                item-title="name"
+                                                item-value="id"
+                                                :loading="customerIsLoading"
+                                                @update:search="customerFilter"
+                                                v-model="
+                                                    companies.formData
+                                                        .customerId
+                                                "
+                                                auto-select-first
                                             >
-                                                <v-list-item
-                                                    v-bind="props"
-                                                    :title="item?.raw?.name"
-                                                    :subtitle="item?.raw?.cpf"
-                                                ></v-list-item>
-                                            </template>
-
-                                            <template v-slot:append>
-                                                <v-btn
-                                                    @click="openCustomerForm"
-                                                    class="mr-1"
-                                                    >Cadastrar</v-btn
+                                                <template
+                                                    v-slot:item="{
+                                                        props,
+                                                        item,
+                                                    }"
                                                 >
-                                            </template>
-                                        </v-autocomplete>
-                                    </v-col>
-                                </v-row>
-                            </v-form>
-                        </template>
+                                                    <v-list-item
+                                                        v-bind="props"
+                                                        :title="item?.raw?.name"
+                                                        :subtitle="
+                                                            item?.raw?.cpf
+                                                        "
+                                                    ></v-list-item>
+                                                </template>
 
-                        <template v-slot:item.2>
-                            <h3 class="text-h6">Cadastro1 do Endereço</h3>
+                                                <template v-slot:append>
+                                                    <v-btn
+                                                        @click="
+                                                            openCustomerForm
+                                                        "
+                                                        class="mr-1"
+                                                        >Cadastrar</v-btn
+                                                    >
+                                                </template>
+                                            </v-autocomplete>
+                                        </v-col>
+                                    </v-row>
+                                </v-form>
+                            </template>
 
-                            <br />
+                            <template v-slot:item.2>
+                                <h3 class="text-h6">Cadastro1 do Endereço</h3>
 
-                            <v-form ref="form2">
-                                <v-row>
-                                    <v-col
-                                        v-for="data in addressDataRequired"
-                                        :key="data.label"
-                                        :cols="data.cols"
-                                        :sm="data.sm"
-                                        :md="data.md"
-                                    >
-                                        <AdmCommonFormDefault
-                                            :data="data"
-                                            v-model="
-                                                companies.formData.address[
-                                                    data.key
-                                                ]
-                                            "
-                                            @update="updateAddress"
+                                <br />
+
+                                <v-form ref="form2">
+                                    <v-row>
+                                        <v-col
+                                            v-for="data in addressDataRequired"
+                                            :key="data.label"
+                                            :cols="data.cols"
+                                            :sm="data.sm"
+                                            :md="data.md"
+                                        >
+                                            <AdmCommonFormDefault
+                                                :data="data"
+                                                v-model="
+                                                    companies.formData.address[
+                                                        data.key
+                                                    ]
+                                                "
+                                                @update="updateAddress"
+                                            />
+                                        </v-col>
+                                    </v-row>
+                                </v-form>
+                            </template>
+
+                            <template v-slot:item.3>
+                                <h3 class="text-h6">Cadastro de Telefones</h3>
+
+                                <br />
+
+                                <v-form ref="form3">
+                                    <v-col>
+                                        <AdmCommonFormPhoneDynamic
+                                            v-model="companies.formData.phones"
                                         />
                                     </v-col>
-                                </v-row>
-                            </v-form>
-                        </template>
+                                </v-form>
+                            </template>
 
-                        <template v-slot:item.3>
-                            <h3 class="text-h6">Cadastro de Telefones</h3>
+                            <template v-slot:item.4>
+                                <h3 class="text-h6">
+                                    Cadastro de Itens Opcionais
+                                </h3>
 
-                            <br />
+                                <br />
 
-                            <v-form ref="form3">
-                                <v-col>
-                                    <AdmCommonFormPhoneDynamic
-                                        v-model="companies.formData.phones"
-                                    />
-                                </v-col>
-                            </v-form>
-                        </template>
-
-                        <template v-slot:item.4>
-                            <h3 class="text-h6">Cadastro de Itens Opcionais</h3>
-
-                            <br />
-
-                            <v-form ref="form4">
-                                <v-row>
-                                    <v-col
-                                        v-for="data in companyDataOptional"
-                                        :key="data.label"
-                                        :cols="data.cols"
-                                        :sm="data.sm"
-                                        :md="data.md"
-                                    >
-                                        <AdmCommonFormDefault
-                                            :data="data"
-                                            v-model="
-                                                companies.formData[data.key]
-                                            "
-                                        />
-                                    </v-col>
-                                </v-row>
-                            </v-form>
-                        </template>
-
-                        <template v-slot:actions>
-                            <v-container class="mb-3">
-                                <v-row>
-                                    <v-btn
-                                        min-width="100"
-                                        @click="prevButton"
-                                        variant="tonal"
-                                        :disabled="prevDisabled"
-                                    >
-                                        voltar
-                                    </v-btn>
-
-                                    <v-spacer></v-spacer>
-
-                                    <v-btn
-                                        min-width="100"
-                                        variant="tonal"
-                                        @click="clearStepForm(step)"
-                                    >
-                                        Limpar
-                                    </v-btn>
-
-                                    <v-btn
-                                        min-width="100"
-                                        variant="tonal"
-                                        class="mx-3"
-                                        @click="closeForm"
-                                    >
-                                        Fechar
-                                    </v-btn>
-
-                                    <v-btn
-                                        min-width="100"
-                                        color="blue"
-                                        class="mr-10"
-                                        :disabled="saveDisabled"
-                                        :loading="isLoading"
-                                        @click="saveButton"
-                                    >
-                                        salvar
-                                    </v-btn>
-
-                                    <v-btn
-                                        min-width="100"
-                                        variant="tonal"
-                                        :disabled="nextDisabled"
-                                        @click="nextButton"
-                                    >
-                                        avançar
-                                    </v-btn>
-                                </v-row>
-                            </v-container>
-                        </template>
-                    </v-stepper>
+                                <v-form ref="form4">
+                                    <v-row>
+                                        <v-col
+                                            v-for="data in companyDataOptional"
+                                            :key="data.label"
+                                            :cols="data.cols"
+                                            :sm="data.sm"
+                                            :md="data.md"
+                                        >
+                                            <AdmCommonFormDefault
+                                                :data="data"
+                                                v-model="
+                                                    companies.formData[data.key]
+                                                "
+                                            />
+                                        </v-col>
+                                    </v-row>
+                                </v-form>
+                            </template>
+							
+							<template v-slot:actions>
+								<AdmCommonFormStepperButtons
+									:saveDisabled="saveDisabled"
+									:nextDisabled="nextDisabled"
+									:isLoading="isLoading"
+									v-model:step="step"
+									@clearStepForm="clearStepForm"
+									@closeForm="closeForm"
+									@saveButton="saveButton"
+									@nextButton="nextButton"
+								></AdmCommonFormStepperButtons>
+							</template>
+                        </v-stepper>
+                    </div>
                 </v-card>
             </v-dialog>
-        </v-row>
+        </div>
 
         <AdmCustomersForm
             v-if="customers.openModalForm"
@@ -280,7 +251,7 @@ async function updateCompany(value) {
         companies.formData.type = null;
         companies.formData.address.zipCode = null;
     } else {
-	companies.formData.address.zipCode = cnpj.formData.cep
+        companies.formData.address.zipCode = cnpj.formData.cep;
         companies.formData.corporateName = formatTextToFirstUpperCase(
             cnpj.formData.razao_social
         );
@@ -489,7 +460,6 @@ async function saveButton() {
     }
 }
 
-const prevDisabled = computed(() => (step.value > 1 ? false : true));
 
 const nextDisabled = computed(() => {
     let index = null;
@@ -671,9 +641,6 @@ async function nextButton() {
     }
 }
 
-function prevButton() {
-    if (step.value > 1) step.value--;
-}
 
 const customerIsLoading = ref(false);
 let timeoutId = null; // Variável para armazenar o ID do timer

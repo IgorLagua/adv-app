@@ -256,49 +256,49 @@ export function customerFieldsOptional() {
 			],
 			key: "pis",
 		},
-		{
-			cols: 12,
-			sm: 6,
-			md: 4,
-			type: "text",
-			label: "n° entidade classe",
-			errorMensages: null,
-			rules: [
-				minLengthValidation({
-					name: "O número da entidade classe",
-					number: 5,
-				}),
-				maxLengthValidation({
-					name: "O número da entidade classe",
-					number: 10,
-				}),
-			],
-			key: "classEntityNumber",
-		},
-		{
-			cols: 12,
-			sm: 6,
-			md: 4,
-			type: "text",
-			label: "Tipo entidade",
-			errorMensages: null,
-			rules: [
-				minLengthValidation({ name: "O tipo entidade", number: 2 }),
-				maxLengthValidation({ name: "O tipo entidade", number: 10 }),
-			],
-			key: "classEntityType",
-		},
-		{
-			cols: 12,
-			sm: 6,
-			md: 4,
-			type: "select",
-			label: "Estado entidade",
-			errorMensages: null,
-			rules: [],
-			items: brazilianStates,
-			key: "classEntityState",
-		},
+		// {
+		// 	cols: 12,
+		// 	sm: 6,
+		// 	md: 4,
+		// 	type: "text",
+		// 	label: "n° entidade classe",
+		// 	errorMensages: null,
+		// 	rules: [
+		// 		minLengthValidation({
+		// 			name: "O número da entidade classe",
+		// 			number: 5,
+		// 		}),
+		// 		maxLengthValidation({
+		// 			name: "O número da entidade classe",
+		// 			number: 10,
+		// 		}),
+		// 	],
+		// 	key: "classEntityNumber",
+		// },
+		// {
+		// 	cols: 12,
+		// 	sm: 6,
+		// 	md: 4,
+		// 	type: "text",
+		// 	label: "Tipo entidade",
+		// 	errorMensages: null,
+		// 	rules: [
+		// 		minLengthValidation({ name: "O tipo entidade", number: 2 }),
+		// 		maxLengthValidation({ name: "O tipo entidade", number: 10 }),
+		// 	],
+		// 	key: "classEntityType",
+		// },
+		// {
+		// 	cols: 12,
+		// 	sm: 6,
+		// 	md: 4,
+		// 	type: "select",
+		// 	label: "Estado entidade",
+		// 	errorMensages: null,
+		// 	rules: [],
+		// 	items: brazilianStates,
+		// 	key: "classEntityState",
+		// },
 		{
 			cols: 12,
 			sm: 6,
@@ -328,3 +328,54 @@ export function customerFieldsOptional() {
 	];
 }
 
+export function customerClassEntitiesFieldsOptional() {
+
+	return [
+
+		{
+			cols: 12,
+			sm: 6,
+			md: 4,
+			type: "text",
+			label: "n° entidade classe",
+			errorMensages: null,
+			rules: [
+				minLengthValidation({
+					name: "O número da entidade classe",
+					number: 5,
+				}),
+				maxLengthValidation({
+					name: "O número da entidade classe",
+					number: 10,
+				}),
+			],
+			key: "number",
+		},
+		{
+			cols: 12,
+			sm: 6,
+			md: 4,
+			type: "text",
+			label: "Tipo entidade",
+			errorMensages: null,
+			rules: [
+				minLengthValidation({ name: "O tipo entidade", number: 2 }),
+				maxLengthValidation({ name: "O tipo entidade", number: 10 }),
+			],
+			key: "type",
+		},
+		{
+			cols: 12,
+			sm: 6,
+			md: 2,
+			type: "select",
+			label: "Estado entidade",
+			errorMensages: null,
+			rules: [],
+			items: brazilianStates,
+			key: "state",
+		},
+		
+
+	];
+}

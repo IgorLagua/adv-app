@@ -1,6 +1,6 @@
 <template>
     <div>
-        <AdmCommonTableTitle :title="'CONTROLE FUNCIONÁRIOS'" />
+        <AdmCommonTableTitle :title="'CONTROLE USUÁRIOS'" />
 
         <AdmUsersTable />
     </div>

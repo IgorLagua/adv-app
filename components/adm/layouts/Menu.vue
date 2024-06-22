@@ -65,14 +65,14 @@ const itemsSuperAdmin = [
 ];
 
 const items = [
-    ["Funcionários", "/adm/users"],
+    ["Usuários", "/adm/users"],
     ["Clientes", "/adm/customers"],
     ["Empresas", "/adm/companies"],
 ];
 
 const filteredItems = computed(() => {
   return items.filter(([title, route]) => {
-    if (title === "Funcionários" && isAdmin()) {
+    if (title === "Usuários" && isAdmin()) {
       return true;
     }
     if (title === "Clientes" && hasPermission('customer', 'index')) {
