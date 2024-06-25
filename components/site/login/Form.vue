@@ -61,6 +61,7 @@
                                     number: 16,
                                 }),
                             ]"
+							@keyup.enter="submitFormData"
                         ></v-text-field>
                     </v-card-text>
 
@@ -74,6 +75,7 @@
                             :loading="isLoading"
                             :disabled="!formIsValid"
                             @click="submitFormData"
+							@keyup.enter="submitFormData"
                         >
                             entrar
                         </v-btn>

@@ -1,21 +1,30 @@
 <template>
-
-    <AdmCommonAutoCompleteServer
+    <v-autocomplete
         @update:modelValue="updateModel"
         @update:search="updateSearch"
-        :data="companies.dataAutoComplete"
-        itemTitle="fantasyName"
-        itemSubTitle="cnpj"
+        :items="companies.data"
+        item-title="corporateName"
+        item-value="cnpj"
         :loading="isLoading"
         label="Empresa"
-        placeholder="Procure por nome ou CNPJ"
-    ></AdmCommonAutoCompleteServer>
-
+        placeholder="Procure por razão social ou CNPJ"
+        auto-select-first
+        return-object
+        :custom-filter="customFilter"
+    >
+        <template v-slot:item="{ props, item }">
+            <v-list-item
+                v-bind="props"
+                :title="item?.raw['corporateName']"
+                :subtitle="item?.raw['cnpj']"
+            ></v-list-item>
+        </template>
+    </v-autocomplete>
 </template>
-
 
 <script setup>
 import { useCompaniesStore } from "~/stores/adm/companies";
+
 const companies = useCompaniesStore();
 const isLoading = ref(false);
 const companySelected = ref();
@@ -25,34 +34,41 @@ const emit = defineEmits(["update"]);
 async function updateModel(data) {
     companySelected.value = data;
     if (data?.id) {
-		isLoading.value = true;
-        await companies.showAutoCompleteApiAction(data.id);
-		isLoading.value = false;
-		emit("update", companies.formData);
+        isLoading.value = true;
+        await companies.showApiAction(data.id);
+        isLoading.value = false;
+        emit("update", companies.formData);
     } else {
-		// Se o usuário do sistema apagar o nome do campo autocomplete, apaga os tags tb. 
-		emit("update");
-	}
+        emit("update");
+    }
 }
 
-let timeoutId = null; // Variável para armazenar o ID do timer
+let timeoutId = null;
 
 function updateSearch(queryText) {
-
-    // Verifica se não existe queryText ou se corresponde ao valor atual do companySelected
-    if (!queryText || queryText === companySelected.value?.name) {
+    if (
+        !queryText ||
+        queryText === companySelected.value?.corporateName ||
+        queryText === companySelected.value?.cnpj
+    ) {
         return;
     } else {
-        clearTimeout(timeoutId); // Cancela o timer anterior, se houver
+        clearTimeout(timeoutId);
         isLoading.value = true;
-        // Configura um novo timer
         timeoutId = setTimeout(async () => {
-            await companies.indexAutoCompleteApiAction({
+            await companies.indexApiAction({
                 search: queryText,
-                columns: "id,fantasyName,cnpj",
+                columns: "id,corporateName,cnpj",
             });
             isLoading.value = false;
-        }, 1000); // Aguarda 1 segundo após o último evento de digitação
+        }, 1000);
     }
+}
+
+function customFilter(itemTitle, queryText, item) {
+    const corporateName = item.raw.corporateName.toLowerCase();
+    const cnpj = item.raw.cnpj.toLowerCase();
+    const searchText = queryText.toLowerCase();
+    return corporateName.includes(searchText) || cnpj.includes(searchText);
 }
 </script>

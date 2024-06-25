@@ -1,65 +1,74 @@
 <template>
-    <!-- {{ modelValue }} -->
-    <!-- v-model="modelValue" -->
-    <AdmCommonAutoCompleteServer
+    <v-autocomplete
         @update:modelValue="updateModel"
         @update:search="updateSearch"
-        :data="customers.dataAutoComplete"
-        itemTitle="name"
-		itemSubTitle="cpf"
+        :items="customers.data"
+        item-title="name"
+        item-value="cpf"
         :loading="isLoading"
         label="Cliente"
         placeholder="Procure por nome ou CPF"
-    ></AdmCommonAutoCompleteServer>
-
+        auto-select-first
+        return-object
+        :custom-filter="customFilter"
+    >
+        <template v-slot:item="{ props, item }">
+            <v-list-item
+                v-bind="props"
+                :title="item?.raw['name']"
+                :subtitle="item?.raw['cpf']"
+            ></v-list-item>
+        </template>
+    </v-autocomplete>
 </template>
-
 
 <script setup>
 import { useCustomersStore } from "~/stores/adm/customers";
+
 const customers = useCustomersStore();
 const isLoading = ref(false);
 const customerSelected = ref();
-
-// onMounted(async () => {
-//     await getCustomerItens();
-// });
 
 const emit = defineEmits(["update"]);
 
 async function updateModel(data) {
     customerSelected.value = data;
     if (data?.id) {
-		isLoading.value = true;
-        await customers.showAutoCompleteApiAction(data.id);
-		isLoading.value = false;
-		emit("update", customers.formData);
+        isLoading.value = true;
+        await customers.showApiAction(data.id);
+        isLoading.value = false;
+        emit("update", customers.formData);
     } else {
-		// Se o usuário do sistema apagar o nome do campo autocomplete, apaga os tags tb. 
-		emit("update");
-	}
-    // console.log("data", data);
+        emit("update");
+    }
 }
 
-let timeoutId = null; // Variável para armazenar o ID do timer
+let timeoutId = null;
 
 function updateSearch(queryText) {
-    // console.log("queryText", queryText);
-
-    // Verifica se não existe queryText ou se corresponde ao valor atual do customerSelected
-    if (!queryText || queryText === customerSelected.value?.name) {
+    if (
+        !queryText ||
+        queryText === customerSelected.value?.name ||
+        queryText === customerSelected.value?.cpf
+    ) {
         return;
     } else {
-        clearTimeout(timeoutId); // Cancela o timer anterior, se houver
+        clearTimeout(timeoutId);
         isLoading.value = true;
-        // Configura um novo timer
         timeoutId = setTimeout(async () => {
-            await customers.indexAutoCompleteApiAction({
+            await customers.indexApiAction({
                 search: queryText,
                 columns: "id,name,cpf",
             });
             isLoading.value = false;
-        }, 1000); // Aguarda 1 segundo após o último evento de digitação
+        }, 1000);
     }
+}
+
+function customFilter(itemTitle, queryText, item) {
+    const name = item.raw.name.toLowerCase();
+    const cpf = item.raw.cpf.toLowerCase();
+    const searchText = queryText.toLowerCase();
+    return name.includes(searchText) || cpf.includes(searchText);
 }
 </script>

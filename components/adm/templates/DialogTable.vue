@@ -88,15 +88,6 @@
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
 
-        <!-- <AdmCommonSnackbar
-            v-if="showSnackbar"
-            v-model="showSnackbar"
-            :title="titleSnackbar"
-            :subTitle="subTitleSnackbar"
-            :color="colorSnackbar"
-            :timeout="4000"
-            :icon="iconSnackbar"
-        ></AdmCommonSnackbar> -->
     </div>
 </template>
 

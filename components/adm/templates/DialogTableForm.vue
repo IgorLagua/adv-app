@@ -103,7 +103,7 @@ async function saveButton() {
                 });
 
                 if (Object.keys(templatesCategories.apiErrors).length === 0) {
-                    emit("update", "store", templates.formData.name);
+					callSnackbar("Criado com sucesso")
                 } else {
                     // Se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -122,7 +122,7 @@ async function saveButton() {
                 });
 
                 if (Object.keys(templatesFiles.apiErrors).length === 0) {
-                    emit("update", "store", templates.formData.name);
+					callSnackbar("Criado com sucesso")
                 } else {
                     // Se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -138,7 +138,7 @@ async function saveButton() {
                 });
 
                 if (Object.keys(templatesCategories.apiErrors).length === 0) {
-                    emit("update", "edit", templates.formData.name);
+					callSnackbar("Modificado com sucesso")
                 } else {
                     // se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -157,7 +157,7 @@ async function saveButton() {
                 }, "update");
 
                 if (Object.keys(templatesFiles.apiErrors).length === 0) {
-                    emit("update", "edit", templates.formData.name);
+					callSnackbar("Modificado com sucesso")
                 } else {
                     // se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API

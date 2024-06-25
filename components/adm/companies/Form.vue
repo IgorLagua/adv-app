@@ -383,6 +383,7 @@ async function saveButton() {
                 }
             }
             callSnackbar(companies.formData.corporateName);
+			nextButton()
         }
     }
 
@@ -403,6 +404,7 @@ async function saveButton() {
             updateErrorMessages(addresses.apiErrors, addressDataRequired.value);
         } else {
             callSnackbar("Endereço");
+			nextButton()
         }
         isLoading.value = false;
     }
@@ -440,6 +442,7 @@ async function saveButton() {
             updateErrorMessages(phones.apiErrors, phones.fieldConfig);
         } else {
             callSnackbar("Telefones");
+			nextButton()
         }
         isLoading.value = false;
     }

@@ -5,9 +5,6 @@ import getters from './getters';
 export const useCompaniesStore = defineStore('companies', {
 	state: () => ({
 
-		fieldConfigMandatory: [],
-		fieldConfigOptional: [],
-
 		openModalForm: false,
 		isLoading: false,
 
@@ -19,11 +16,6 @@ export const useCompaniesStore = defineStore('companies', {
 		storeData: [],
 
 		data: [],
-
-		dataAutoComplete: [],			// Armazena id, cpf e name para vizualização do AutoComplete
-		dataSelectedAutoComplete: [],	// Armazena todos os dados do cliente para seleção nos modelos padrão
-		storeDataAutoComplete: [],		// Armazena paramsData para não fazer novas requisições se já existe o dados em dataAutoComplete
-
 
 		// isDataLoaded: false, 	//Veriica se o dados já foi carregado pelo servidor SSR ou cliente
 

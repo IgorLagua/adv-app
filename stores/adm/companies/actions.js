@@ -4,8 +4,8 @@ const actions = {
 
 	async indexApiAction(paramsData) {
 
-		const authentication = useAuthenticationStore();
-		paramsData.tenantIds = authentication.tenantIds
+		// const authentication = useAuthenticationStore();
+		// paramsData.tenantIds = authentication.tenantIds
 
 		const existingData = this.storeData.find(el => JSON.stringify(el.paramsData) === JSON.stringify(paramsData));
 
@@ -14,74 +14,81 @@ const actions = {
 			this.totalItems = existingData.totalItems;
 			return; // Retorna se os dados já existem
 		}
-		else {
-			const endpoint = "companies";
-			const options = {
-				query: paramsData,
-				headers: {
-					resourceName: "company",
-					permissionName: "index"
-				}
-			};
 
-			const { data } = await useApi(endpoint, options);
-
-			if (data) {
-				this.storeData.push({
-					data: data.data,
-					totalItems: data.meta.total,
-					paramsData,
-				});
-				this.data = data.data;
-				this.totalItems = data.meta.total;
+		const endpoint = "companies";
+		const options = {
+			query: paramsData,
+			headers: {
+				resourceName: "company",
+				permissionName: "index"
 			}
+		};
+
+		const { data } = await useApi(endpoint, options);
+
+		if (data) {
+			this.apiErrors = {}
+			this.storeData.push({
+				data: data.data,
+				totalItems: data.meta.total,
+				paramsData,
+			});
+			// this.data = data.data;
+			this.totalItems = data.meta.total;
+
+			// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.data
+			data.data.forEach(obj => {
+				// Verifica se um objeto com o mesmo id já existe em this.dataAutoComplete
+				const exists = this.data.some(existingObj => existingObj.id === obj.id);
+
+				// Se o objeto não existe, adiciona-o ao array
+				if (!exists) {
+					this.data.push(obj);
+				}
+			});
 		}
+		else {
+			this.apiErrors = error
+		}
+
 	},
 
 
-	// Quando procua dados pelo AutoComplete --> usado no Modelo Padrão
-	async indexAutoCompleteApiAction(paramsData) {
+	// // Quando procua dados pelo AutoComplete --> usado no Modelo Padrão
+	// async indexAutoCompleteApiAction(paramsData) {
 
-		const authentication = useAuthenticationStore();
-		paramsData.tenantIds = authentication.tenantIds
+	// 	const authentication = useAuthenticationStore();
+	// 	paramsData.tenantIds = authentication.tenantIds
 
-		const existingData = this.storeDataAutoComplete.find(el => JSON.stringify(el.paramsData) === JSON.stringify(paramsData));
+	// 	const existingData = this.storeDataAutoComplete.find(el => JSON.stringify(el.paramsData) === JSON.stringify(paramsData));
 
-		if (existingData) {
-			return; // Retorna se os dados já existem
-		}
-		else {
+	// 	if (existingData) {
+	// 		return; // Retorna se os dados já existem
+	// 	}
+	// 	else {
 
-			const endpoint = "companies";
-			const options = {
-				query: paramsData,
-				headers: {
-					resourceName: "company",
-					permissionName: "index"
-				}
-			};
+	// 		const endpoint = "companies";
+	// 		const options = {
+	// 			query: paramsData,
+	// 			headers: {
+	// 				resourceName: "company",
+	// 				permissionName: "index"
+	// 			}
+	// 		};
 
-			const { data } = await useApi(endpoint, options);
+	// 		const { data } = await useApi(endpoint, options);
 
-			if (data) {
+	// 		if (data) {
 
-				this.storeDataAutoComplete.push({
-					paramsData,
-				});
+	// 			this.storeDataAutoComplete.push({
+	// 				paramsData,
+	// 			});
 
-				// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.storeDataAutoComplete
-				data.data.forEach(obj => {
-					// Verifica se um objeto com o mesmo id já existe em this.dataAutoComplete
-					const exists = this.dataAutoComplete.some(existingObj => existingObj.id === obj.id);
+	// 			console.log('existingData', existingData);
 
-					// Se o objeto não existe, adiciona-o ao array
-					if (!exists) {
-						this.dataAutoComplete.push(obj);
-					}
-				});
-			}
-		}
-	},
+	// 		}
+	// 	}
+	// },
 
 
 	async storeApiAction(formData) {
@@ -121,6 +128,13 @@ const actions = {
 
 	async showApiAction(id) {
 
+		const existingData = this.data.find(el => el.id === id && 'type' in el);	//Se os IDs são números ou strings simples, o uso de JSON.stringify é desnecessário.
+
+		if (existingData) {
+			this.formData = deepClone(existingData);
+			return; // Retorna se os dados já existem
+		}
+
 		const endpoint = `companies/${id}`;
 		const options = {
 			headers: {
@@ -132,14 +146,14 @@ const actions = {
 		const { data, error } = await useApi(endpoint, options);
 
 		if (data) {
-
 			this.apiErrors = {}
-
-			// this.formData = JSON.parse(JSON.stringify(data.data))    //Clonagem Profunda garante que cada nível do objeto seja uma nova referência, pois da maneira convencional quando mudava o endereço ou o telefone no 'formData', mudava tambem o array 'data'
 			this.formData = deepClone(data.data)    //Clonagem Profunda garante que cada nível do objeto seja uma nova referência, pois da maneira convencional quando mudava o endereço ou o telefone no 'formData', mudava tambem o array 'data'
 			const index = this.data.findIndex(el => el.id === id)
-			this.data[index] = { ...data.data }
-
+			if (index > -1) {
+				this.data[index] = { ...data.data }
+			} else {
+				this.data.push(data.data)
+			}
 		}
 
 		else {
@@ -149,37 +163,37 @@ const actions = {
 	},
 
 
-	async showAutoCompleteApiAction(companyId) {
+	// async showAutoCompleteApiAction(companyId) {
 
-		const existingData = this.dataSelectedAutoComplete.find(el => JSON.stringify(el.id) === JSON.stringify(companyId));
+	// 	const existingData = this.dataSelectedAutoComplete.find(el => JSON.stringify(el.id) === JSON.stringify(companyId));
 
-		if (existingData) {
-			this.formData = existingData;
-			return; // Retorna se os dados já existem
-		} else {
-			const endpoint = `companies/${companyId}`;
-			const options = {
-				headers: {
-					resourceName: "company",
-					permissionName: "show"
-				}
-			};
+	// 	if (existingData) {
+	// 		this.formData = existingData;
+	// 		return; // Retorna se os dados já existem
+	// 	} else {
+	// 		const endpoint = `companies/${companyId}`;
+	// 		const options = {
+	// 			headers: {
+	// 				resourceName: "company",
+	// 				permissionName: "show"
+	// 			}
+	// 		};
 
-			const { data, error } = await useApi(endpoint, options);
+	// 		const { data, error } = await useApi(endpoint, options);
 
-			if (data) {
-				this.apiErrors = {}
-				this.formData = deepClone(data.data)
-				this.dataSelectedAutoComplete.push(data.data)
-				// const index = this.dataAutoComplete.findIndex(el => el.id === companyId)
-				// this.dataAutoComplete[index] = { ...data.data }
-			}
+	// 		if (data) {
+	// 			this.apiErrors = {}
+	// 			this.formData = deepClone(data.data)
+	// 			this.dataSelectedAutoComplete.push(data.data)
+	// 			// const index = this.dataAutoComplete.findIndex(el => el.id === companyId)
+	// 			// this.dataAutoComplete[index] = { ...data.data }
+	// 		}
 
-			else {
-				this.apiErrors = error
-			}
-		}
-	},
+	// 		else {
+	// 			this.apiErrors = error
+	// 		}
+	// 	}
+	// },
 
 
 	async updateApiAction(formData) {
