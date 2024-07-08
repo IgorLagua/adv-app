@@ -427,7 +427,7 @@ async function saveButton() {
 
             // Se encontrar a entidade de classe, compara se os dados são iguais ao formData
             if (classEntity) {
-                const comparisonIsEqual = compareArrays(
+                const comparisonIsEqual = compareValues(
                     classEntity[customers.formData.id],
                     classEntities.formData
                 );
@@ -536,7 +536,7 @@ const saveDisabled = computed(() => {
         );
 
         // Verifica se os arrays são diferentes para habilitar o botão
-        const comparisonIsEqual = compareArrays(
+        const comparisonIsEqual = compareValues(
             customers.data[index].phones,
             customers.formData.phones
         );
@@ -560,37 +560,55 @@ const saveDisabled = computed(() => {
     }
 
     if (step.value === 4 && form4.value?.isValid) {
-        for (let i = 0; i < customerDataOptional.value.length; i++) {
-            const data = customerDataOptional.value[i];
 
-            // Verifica se existe valor em customers.data[index][data.key]
-            // e não existe valor em customers.formData[data.key]
-            if (
-                customers.data[index][data.key] &&
-                !customers.formData[data.key]
-            ) {
-                return false;
-            }
+			// console.log('customers.data[index]', customers.data[index]);
+			// console.log('customers.formData', customers.formData);
 
-            // Se qualquer campo tiver valor e esse valor for diferente de vazio
-            // e diferente do gravado em customers.data[index], habilitar o botão
-            if (
-                customers.formData[data.key] &&
-                customers.formData[data.key] !== "" &&
-                customers.formData[data.key] !== customers.data[index][data.key]
-            ) {
-                return false; // Retorna falso para habilitar o botão
-            }
-        }
+			const compareData = compareValues(
+                customers.data[index],
+                customers.formData
+            );
+
+			if ( !compareData ) return false
+
+
+        // for (let i = 0; i < customerDataOptional.value.length; i++) {
+        //     const data = customerDataOptional.value[i];
+
+			
+
+		// 	console.log('customers.data[index][data.key]', customers.data[index][data.key]);
+		// 	console.log('customers.formData[data.key]', customers.formData[data.key]);
+
+        //     // Verifica se existe valor em customers.data[index][data.key]
+        //     // e não existe valor em customers.formData[data.key]
+        //     if (
+        //         customers.data[index][data.key] &&
+        //         !customers.formData[data.key]
+        //     ) {
+        //         return false;
+        //     }
+
+        //     // Se qualquer campo tiver valor e esse valor for diferente de vazio
+        //     // e diferente do gravado em customers.data[index], habilitar o botão
+        //     if (
+        //         customers.formData[data.key] &&
+        //         customers.formData[data.key] !== "" &&
+        //         customers.formData[data.key] !== customers.data[index][data.key]
+        //     ) {
+        //         return false; // Retorna falso para habilitar o botão
+        //     }
+        // }
 
         // Procura a entidade de classe com a chave no classEntities.data
-        const classEntity = classEntities.data.find((el) =>
+        
+		const classEntity = classEntities.data.find((el) =>
             el.hasOwnProperty(customers.formData.id)
         );
 
         if (classEntity) {
             // Compara se classEntities.data é igual a classEntities.formData
-            return compareArrays(
+            return compareValues(
                 classEntity[customers.formData.id],
                 classEntities.formData
             );
@@ -632,50 +650,3 @@ function callSnackbar(title) {
     snackbar.icon = "mdi-checkbox-marked-circle-outline";
 }
 </script>
-
-
-
-const saveDisabled = computed(() => {
-    let index = null;
-    if (customers.formData.id) {
-        index = customers.data.findIndex(
-            (el) => el.id === customers.formData.id
-        );
-
-		if ( step.value === 4 )
-		console.log('step.value', step.value);
-		
-		await classEntities.showApiAction(customers.formData.id);
-    }
-
-    if (step.value === 4 && form4.value?.isValid) {
-        for (let i = 0; i < customerDataOptional.value.length; i++) {
-            const data = customerDataOptional.value[i];
-
-            // Verifica se existe valor em customers.data[index][data.key]
-            // e não existe valor em customers.formData[data.key]
-            if (
-                customers.data[index][data.key] &&
-                !customers.formData[data.key]
-            ) {
-                return false;
-            }
-
-            // Se qualquer campo tiver valor e esse valor for diferente de vazio
-            // e diferente do gravado em customers.data[index], habilitar o botão
-            if (
-                customers.formData[data.key] &&
-                customers.formData[data.key] !== "" &&
-                customers.formData[data.key] !== customers.data[index][data.key]
-            ) {
-                return false; // Retorna falso para habilitar o botão
-            }
-        }
-
-
-
-
-    }
-    // Desabilita o botão por padrão se nenhuma condição acima for atendida
-    return true;
-});

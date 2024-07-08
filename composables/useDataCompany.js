@@ -71,18 +71,18 @@ export function companyFieldsRequired() {
 			key: "type",
 		},
 
-		{
-			cols: 12,
-			sm: 8,
-			md: 8,
-			// type: "autocomplete",
-			// label: "Representante Legal",
-			// errorMensages: null,
-			// rules: [
-			// ],
-			// items: customers.data,
-			key: "customerId",
-		},
+		// {
+		// 	cols: 12,
+		// 	sm: 8,
+		// 	md: 8,
+		// 	// type: "autocomplete",
+		// 	// label: "Representante Legal",
+		// 	// errorMensages: null,
+		// 	// rules: [
+		// 	// ],
+		// 	// items: customers.data,
+		// 	key: "customerId",
+		// },
 
 	];
 

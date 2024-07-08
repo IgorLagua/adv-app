@@ -152,6 +152,7 @@ async function loadItems({ page, itemsPerPage, sortBy }) {
         itemsPerPage,
         sortBy,
         search: searchTable.value ? searchTable.value : [],
+		columns: "id,name,cpf,email,phones",
     };
     await customers.indexApiAction(paramsData);
     isLoading.value = false;

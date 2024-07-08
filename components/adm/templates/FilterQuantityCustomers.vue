@@ -2,6 +2,7 @@
     <v-autocomplete
         @update:modelValue="updateModel"
         @update:search="updateSearch"
+		@update:focused="firstAccess"
         :items="customers.data"
         item-title="name"
         item-value="cpf"
@@ -31,26 +32,21 @@ const customerSelected = ref();
 
 const emit = defineEmits(["update"]);
 
-async function updateModel(data) {
-    customerSelected.value = data;
-    if (data?.id) {
-        isLoading.value = true;
-        await customers.showApiAction(data.id);
-        isLoading.value = false;
-        emit("update", customers.formData);
-    } else {
-        emit("update");
+async function firstAccess() {
+    if (customers.data.length === 0) {
+		isLoading.value = true;
+        await customers.indexApiAction({
+            itemsPerPage: 10,
+            columns: "id,name,cpf",
+        });
+		isLoading.value = false;
     }
 }
 
 let timeoutId = null;
 
-function updateSearch(queryText) {
-    if (
-        !queryText ||
-        queryText === customerSelected.value?.name ||
-        queryText === customerSelected.value?.cpf
-    ) {
+async function updateSearch(queryText) {
+    if (!queryText || queryText === customerSelected.value?.name) {
         return;
     } else {
         clearTimeout(timeoutId);
@@ -64,6 +60,19 @@ function updateSearch(queryText) {
         }, 1000);
     }
 }
+
+async function updateModel(data) {
+    customerSelected.value = data;
+    if (data?.id) {
+        isLoading.value = true;
+        await customers.showApiAction(data.id);
+        isLoading.value = false;
+        emit("update", customers.formData);
+    } else {
+        emit("update");
+    }
+}
+
 
 function customFilter(itemTitle, queryText, item) {
     const name = item.raw.name.toLowerCase();

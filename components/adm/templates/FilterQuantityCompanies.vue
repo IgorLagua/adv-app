@@ -2,6 +2,7 @@
     <v-autocomplete
         @update:modelValue="updateModel"
         @update:search="updateSearch"
+		@update:focused="firstAccess"
         :items="companies.data"
         item-title="corporateName"
         item-value="cnpj"
@@ -31,26 +32,21 @@ const companySelected = ref();
 
 const emit = defineEmits(["update"]);
 
-async function updateModel(data) {
-    companySelected.value = data;
-    if (data?.id) {
+async function firstAccess() {
+    if (companies.data.length === 0) {
         isLoading.value = true;
-        await companies.showApiAction(data.id);
+        await companies.indexApiAction({
+            itemsPerPage: 10,
+            columns: "id,corporateName,cnpj",
+        });
         isLoading.value = false;
-        emit("update", companies.formData);
-    } else {
-        emit("update");
     }
 }
 
 let timeoutId = null;
 
 function updateSearch(queryText) {
-    if (
-        !queryText ||
-        queryText === companySelected.value?.corporateName ||
-        queryText === companySelected.value?.cnpj
-    ) {
+    if (!queryText || queryText === companySelected.value?.corporateName) {
         return;
     } else {
         clearTimeout(timeoutId);
@@ -62,6 +58,18 @@ function updateSearch(queryText) {
             });
             isLoading.value = false;
         }, 1000);
+    }
+}
+
+async function updateModel(data) {
+    companySelected.value = data;
+    if (data?.id) {
+        isLoading.value = true;
+        await companies.showApiAction(data.id);
+        isLoading.value = false;
+        emit("update", companies.formData);
+    } else {
+        emit("update");
     }
 }
 

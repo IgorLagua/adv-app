@@ -4,13 +4,15 @@ const actions = {
 
 	async indexApiAction(paramsData) {
 
+		// console.log('paramsData', paramsData);
 		// const authentication = useAuthenticationStore();
 		// paramsData.tenantIds = authentication.tenantIds
 
 		const existingData = this.storeData.find(el => JSON.stringify(el.paramsData) === JSON.stringify(paramsData));
-
+// console.log('existingData', existingData);
 		if (existingData) {
 			this.data = existingData.data;
+			// this.formData = existingData.data;
 			this.totalItems = existingData.totalItems;
 			return; // Retorna se os dados já existem
 		}
@@ -34,7 +36,7 @@ const actions = {
 				totalItems: data.meta.total,
 				paramsData,
 			});
-			// this.data = data.data;
+			this.data = data.data;
 			this.totalItems = data.meta.total;
 
 			// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.data

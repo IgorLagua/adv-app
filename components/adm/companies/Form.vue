@@ -10,7 +10,7 @@
                     </v-card-title>
 
                     <v-progress-linear
-                        v-if="companies.isLoading"
+                        v-if="progressLinearIsLoading"
                         indeterminate
                         color="blue"
                         :height="6"
@@ -41,49 +41,13 @@
                                                 "
                                                 @update="updateCompany"
                                             />
-
-                                            <v-autocomplete
-                                                v-if="data.key === 'customerId'"
-                                                label="Represente legal"
-                                                :items="customers.data"
-                                                no-filter
-                                                item-title="name"
-                                                item-value="id"
-                                                :loading="customerIsLoading"
-                                                @update:search="customerFilter"
-                                                v-model="
-                                                    companies.formData
-                                                        .customerId
-                                                "
-                                                auto-select-first
-                                            >
-                                                <template
-                                                    v-slot:item="{
-                                                        props,
-                                                        item,
-                                                    }"
-                                                >
-                                                    <v-list-item
-                                                        v-bind="props"
-                                                        :title="item?.raw?.name"
-                                                        :subtitle="
-                                                            item?.raw?.cpf
-                                                        "
-                                                    ></v-list-item>
-                                                </template>
-
-                                                <template v-slot:append>
-                                                    <v-btn
-                                                        @click="
-                                                            openCustomerForm
-                                                        "
-                                                        class="mr-1"
-                                                        >Cadastrar</v-btn
-                                                    >
-                                                </template>
-                                            </v-autocomplete>
                                         </v-col>
                                     </v-row>
+
+                                    <!-- v-if="teste" -->
+                                    <AdmCompaniesFormDynamicAutocomplete
+                                        v-model="companies.formData.customers"
+                                    ></AdmCompaniesFormDynamicAutocomplete>
                                 </v-form>
                             </template>
 
@@ -155,47 +119,30 @@
                                     </v-row>
                                 </v-form>
                             </template>
-							
-							<template v-slot:actions>
-								<AdmCommonFormStepperButtons
-									:saveDisabled="saveDisabled"
-									:nextDisabled="nextDisabled"
-									:isLoading="isLoading"
-									v-model:step="step"
-									@clearStepForm="clearStepForm"
-									@closeForm="closeForm"
-									@saveButton="saveButton"
-									@nextButton="nextButton"
-								></AdmCommonFormStepperButtons>
-							</template>
+
+                            <template v-slot:actions>
+                                <AdmCommonFormStepperButtons
+                                    :saveDisabled="saveDisabled"
+                                    :nextDisabled="nextDisabled"
+                                    :isLoading="isLoading"
+                                    v-model:step="step"
+                                    @clearStepForm="clearStepForm"
+                                    @closeForm="closeForm"
+                                    @saveButton="saveButton"
+                                    @nextButton="nextButton"
+                                ></AdmCommonFormStepperButtons>
+                            </template>
                         </v-stepper>
                     </div>
                 </v-card>
             </v-dialog>
         </div>
-
-        <AdmCustomersForm
-            v-if="customers.openModalForm"
-            title="Cadastro Cliente"
-            @update="updateSnackbar"
-        />
-
-        <AdmCommonSnackbar
-            v-if="showSnackbar"
-            v-model="showSnackbar"
-            :title="titleSnackbar"
-            subTitle="Cadastrado com sucesso"
-            color="green"
-            :timeout="4000"
-            icon="mdi-checkbox-marked-circle-outline"
-        ></AdmCommonSnackbar>
     </div>
 </template>
 
 
 <script setup>
 import { useCompaniesStore } from "~/stores/adm/companies";
-import { useCustomersStore } from "~/stores/adm/customers";
 import { useAddressesStore } from "~/stores/adm/addresses";
 import { usePhonesStore } from "~/stores/adm/phones";
 import { useCnpjStore } from "~/stores/cnpj";
@@ -203,7 +150,6 @@ import { useZipCodeStore } from "~/stores/zipCode";
 import { useSnackbarStore } from "~/stores/snackbar";
 
 const companies = useCompaniesStore();
-const customers = useCustomersStore();
 const addresses = useAddressesStore();
 const phones = usePhonesStore();
 const cnpj = useCnpjStore();
@@ -214,29 +160,14 @@ const { updateErrorMessages } = useApiErrorMessages();
 
 const props = defineProps({
     title: { type: String, required: false },
+    companyId: { type: String, required: false },
 });
-
-// const emit = defineEmits(["update"]);
 
 // Dados dos inputs com Validações --> vem da pasta composables/useDataCompany
 const companyDataRequired = ref(companyFieldsRequired());
 const companyDataOptional = ref(companyFieldsOptional());
 
 const addressDataRequired = ref(addressFieldsRequired());
-
-// const loadingCustomer = ref(false);
-
-// // empresa obrigatórios --> Inicializa a configuração dos campos com as funções necessárias
-// companies.initializeFieldConfigMandatory(
-//     requiredValidation,
-//     equalLengthValidation,
-//     minLengthValidation,
-//     maxLengthValidation,
-//     cnpjValidation,
-//     cnpjMask,
-//     loadingCnpj,
-//     loadingCustomer
-// );
 
 async function updateCompany(value) {
     companyDataRequired.value[0].loading = true;
@@ -333,6 +264,24 @@ const form3 = ref(null);
 const form4 = ref(null);
 
 const isLoading = ref(false);
+const progressLinearIsLoading = ref(false);
+
+onMounted(async () => {
+    if (props.title === "Cadastro Empresa") {
+        companies.formData.customers = [null];
+    }
+    else if (props.title === "Editar Empresa") {
+        progressLinearIsLoading.value = true;
+        // await sleep(3000)
+        // Carrega o representante legal da empresa
+        await companies.showApiAction(props.companyId);
+
+        if (companies.formData.customers?.length === 0) {
+            companies.formData.customers = [null];
+        }
+        progressLinearIsLoading.value = false;
+    }
+});
 
 async function saveButton() {
     let index = null;
@@ -350,9 +299,40 @@ async function saveButton() {
             formData[value.key] = companies.formData[value.key];
         });
 
+        // Remover valores nulos ou vazios de companies.formData.customers
+        const cleanedCustomers = companies.formData.customers.filter(
+            (item) => item != null && item !== ""
+        );
+
+        // Compara se companies.formData.customers é igual a companies.legalRepresentatives
+        const comparisonIsEqual = compareValues(
+            cleanedCustomers,
+            companies.legalRepresentatives
+        );
+
+        // Se for diferente cadastra novamente
+        if (!comparisonIsEqual) {
+            // console.log("comparisonIsEqual", comparisonIsEqual);
+            // Função para atualizar customerIds baseado no valor de companies.formData.customers
+            const ulidCustomers = companies.formData.customers.filter((item) =>
+                isUlidVariable(item)
+            );
+            // Filtrar objetos com chave id que são ULIDs
+            const objectCustomers = companies.formData.customers
+                .filter(
+                    (item) =>
+                        typeof item === "object" && isUlidVariable(item?.id)
+                )
+                .map((item) => item.id);
+
+            // Combinar os dois arrays, se houver ULIDs
+            formData.customerIds = [...ulidCustomers, ...objectCustomers];
+
+            // console.log("formData.customerIds", formData.customerIds);
+        }
+
         if (companies.formData.id) {
             formData.id = companies.formData.id;
-
             await companies.updateApiAction(formData);
         } else {
             await companies.storeApiAction(formData);
@@ -383,7 +363,7 @@ async function saveButton() {
                 }
             }
             callSnackbar(companies.formData.corporateName);
-			nextButton()
+            nextButton();
         }
     }
 
@@ -404,7 +384,7 @@ async function saveButton() {
             updateErrorMessages(addresses.apiErrors, addressDataRequired.value);
         } else {
             callSnackbar("Endereço");
-			nextButton()
+            nextButton();
         }
         isLoading.value = false;
     }
@@ -442,7 +422,7 @@ async function saveButton() {
             updateErrorMessages(phones.apiErrors, phones.fieldConfig);
         } else {
             callSnackbar("Telefones");
-			nextButton()
+            nextButton();
         }
         isLoading.value = false;
     }
@@ -462,7 +442,6 @@ async function saveButton() {
         isLoading.value = false;
     }
 }
-
 
 const nextDisabled = computed(() => {
     let index = null;
@@ -512,6 +491,14 @@ const saveDisabled = computed(() => {
                 }
             }
         }
+
+        // Remover valores nulos ou vazios de companies.formData.customers
+        const cleanedCustomers = companies.formData.customers.filter(
+            (item) => item != null && item !== ""
+        );
+
+        // Compara se companies.formData.customers é igual a companies.legalRepresentatives
+        return compareValues(cleanedCustomers, companies.legalRepresentatives);
     }
 
     if (step.value === 2 && form2.value?.isValid) {
@@ -544,7 +531,7 @@ const saveDisabled = computed(() => {
         );
 
         // Verifica se os arrays são diferentes para habilitar o botão
-        const comparisonIsEqual = compareArrays(
+        const comparisonIsEqual = compareValues(
             companies.data[index].phones,
             companies.formData.phones
         );
@@ -568,65 +555,74 @@ const saveDisabled = computed(() => {
     }
 
     if (step.value === 4 && form4.value?.isValid) {
-        for (let i = 0; i < companyDataOptional.value.length; i++) {
-            const data = companyDataOptional.value[i];
+        
+		const compareData = compareValues(
+                companies.data[index],
+                companies.formData
+            );
 
-            // Verifica se existe valor em companies.data[index][data.key]
-            // e não existe valor em companies.formData[data.key]
-            if (
-                companies.data[index][data.key] &&
-                !companies.formData[data.key]
-            ) {
-                return false;
-            }
+			if ( !compareData ) return false
 
-            // Se qualquer campo tiver valor e esse valor for diferente de vazio
-            // e diferente do gravado em companies.data[index], habilitar o botão
-            if (
-                companies.formData[data.key] &&
-                companies.formData[data.key] !== "" &&
-                companies.formData[data.key] !== companies.data[index][data.key]
-            ) {
-                return false; // Retorna falso para habilitar o botão
-            }
-        }
+		
+		// for (let i = 0; i < companyDataOptional.value.length; i++) {
+        //     const data = companyDataOptional.value[i];
+
+        //     // Verifica se existe valor em companies.data[index][data.key]
+        //     // e não existe valor em companies.formData[data.key]
+        //     if (
+        //         companies.data[index][data.key] &&
+        //         !companies.formData[data.key]
+        //     ) {
+        //         return false;
+        //     }
+
+        //     // Se qualquer campo tiver valor e esse valor for diferente de vazio
+        //     // e diferente do gravado em companies.data[index], habilitar o botão
+        //     if (
+        //         companies.formData[data.key] &&
+        //         companies.formData[data.key] !== "" &&
+        //         companies.formData[data.key] !== companies.data[index][data.key]
+        //     ) {
+        //         return false; // Retorna falso para habilitar o botão
+        //     }
+        // }
     }
 
     // Desabilita o botão por padrão se nenhuma condição acima for atendida
     return true;
 });
 
-function compareArrays(array1, array2) {
-    if (array1.length !== array2.length) {
-        return false;
-    }
+// function compareArrays(array1, array2) {
+//     if (array1.length !== array2.length) {
+//         return false;
+//     }
 
-    function hashObject(obj) {
-        // Cria uma string única baseada nos valores do objeto
-        return JSON.stringify(obj, Object.keys(obj).sort());
-    }
+//     function hashObject(obj) {
+//         // Cria uma string única baseada nos valores do objeto
+//         return JSON.stringify(obj, Object.keys(obj).sort());
+//     }
 
-    function createFrequencyMap(array) {
-        const freqMap = {};
-        array.forEach((item) => {
-            const hash = hashObject(item);
-            freqMap[hash] = (freqMap[hash] || 0) + 1;
-        });
-        return freqMap;
-    }
+//     function createFrequencyMap(array) {
+//         const freqMap = {};
+//         array.forEach((item) => {
+//             const hash = hashObject(item);
+//             freqMap[hash] = (freqMap[hash] || 0) + 1;
+//         });
+//         return freqMap;
+//     }
 
-    const freqMap = createFrequencyMap(array1);
+//     const freqMap = createFrequencyMap(array1);
 
-    for (const item of array2) {
-        const hash = hashObject(item);
-        if (!freqMap[hash]) {
-            return false;
-        }
-        freqMap[hash] -= 1;
-    }
+//     for (const item of array2) {
+//         const hash = hashObject(item);
+//         if (!freqMap[hash]) {
+//             return false;
+//         }
+//         freqMap[hash] -= 1;
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
 async function nextButton() {
     let validationResponse;
@@ -642,61 +638,6 @@ async function nextButton() {
     if (validationResponse && validationResponse.valid) {
         step.value++;
     }
-}
-
-
-const customerIsLoading = ref(false);
-let timeoutId = null; // Variável para armazenar o ID do timer
-
-function customerFilter(queryText) {
-    if (!companies.formData.customerId && queryText) {
-        clearTimeout(timeoutId); // Cancela o timer anterior, se houver
-        customerIsLoading.value = true;
-
-        // Configura um novo timer
-        timeoutId = setTimeout(() => {
-            getCustomersItens(queryText);
-        }, 1000); // Aguarda 1 segundo após o último evento de digitação
-    } else if (queryText === null) {
-        getCustomersItens();
-    }
-}
-
-async function getCustomersItens(queryText) {
-    if (queryText) {
-        await customers.indexApiAction({ search: queryText });
-    } else {
-        await customers.indexApiAction();
-    }
-    customerIsLoading.value = false;
-}
-
-function openCustomerForm() {
-    customers.formData = {};
-    customers.formData.address = {};
-    customers.openModalForm = true;
-}
-
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
-
-function updateSnackbar(step) {
-    switch (step) {
-        case 1:
-            titleSnackbar.value = customers.formData.name;
-            break;
-        case 2:
-            titleSnackbar.value = "Endereço";
-            break;
-        case 3:
-            titleSnackbar.value = "Telefones";
-            break;
-        case 4:
-            titleSnackbar.value = "Dados opcionais";
-            break;
-    }
-
-    showSnackbar.value = true;
 }
 
 function callSnackbar(title) {

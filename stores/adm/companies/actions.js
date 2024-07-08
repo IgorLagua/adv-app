@@ -1,4 +1,5 @@
-import { useAuthenticationStore } from "~/stores/site/authentication";
+// import { useAuthenticationStore } from "~/stores/site/authentication";
+import { useCustomersStore } from '~/stores/adm/customers'
 
 const actions = {
 
@@ -33,7 +34,7 @@ const actions = {
 				totalItems: data.meta.total,
 				paramsData,
 			});
-			// this.data = data.data;
+			this.data = data.data;
 			this.totalItems = data.meta.total;
 
 			// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.data
@@ -52,44 +53,6 @@ const actions = {
 		}
 
 	},
-
-
-	// // Quando procua dados pelo AutoComplete --> usado no Modelo Padrão
-	// async indexAutoCompleteApiAction(paramsData) {
-
-	// 	const authentication = useAuthenticationStore();
-	// 	paramsData.tenantIds = authentication.tenantIds
-
-	// 	const existingData = this.storeDataAutoComplete.find(el => JSON.stringify(el.paramsData) === JSON.stringify(paramsData));
-
-	// 	if (existingData) {
-	// 		return; // Retorna se os dados já existem
-	// 	}
-	// 	else {
-
-	// 		const endpoint = "companies";
-	// 		const options = {
-	// 			query: paramsData,
-	// 			headers: {
-	// 				resourceName: "company",
-	// 				permissionName: "index"
-	// 			}
-	// 		};
-
-	// 		const { data } = await useApi(endpoint, options);
-
-	// 		if (data) {
-
-	// 			this.storeDataAutoComplete.push({
-	// 				paramsData,
-	// 			});
-
-	// 			console.log('existingData', existingData);
-
-	// 		}
-	// 	}
-	// },
-
 
 	async storeApiAction(formData) {
 
@@ -118,6 +81,24 @@ const actions = {
 			this.formData = deepClone(data.data)
 			// this.formData = JSON.parse(JSON.stringify(data.data))
 			this.totalItems++
+
+			// Se a empresa tiver dados dos clientes (repreentantes) já carrega na loja de customer para não fazer uma nova requisição
+			if (data.data.customers.length > 0) {
+
+				const customers = useCustomersStore();
+
+				// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.data
+				data.data.customers.forEach(obj => {
+					// Verifica se um objeto com o mesmo id já existe em customers.dataAutoComplete
+					const exists = customers.data.some(existingObj => existingObj.id === obj.id);
+
+					// Se o objeto não existe, adiciona-o ao array
+					if (!exists) {
+						customers.data.push(obj);
+					}
+				});
+			}
+			this.legalRepresentatives = data.data.customers
 		}
 
 		else {
@@ -132,6 +113,7 @@ const actions = {
 
 		if (existingData) {
 			this.formData = deepClone(existingData);
+			this.legalRepresentatives = existingData.customers
 			return; // Retorna se os dados já existem
 		}
 
@@ -154,6 +136,26 @@ const actions = {
 			} else {
 				this.data.push(data.data)
 			}
+
+			// Se a empresa tiver dados dos clientes (repreentantes) já carrega na loja de customer para não fazer uma nova requisição
+			if (data.data.customers.length > 0) {
+
+				const customers = useCustomersStore();
+
+				// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.data
+				data.data.customers.forEach(obj => {
+					// Verifica se um objeto com o mesmo id já existe em customers.dataAutoComplete
+					const exists = customers.data.some(existingObj => existingObj.id === obj.id);
+
+					// Se o objeto não existe, adiciona-o ao array
+					if (!exists) {
+						customers.data.push(obj);
+					}
+				});
+
+			}
+			this.legalRepresentatives = data.data.customers
+
 		}
 
 		else {
@@ -161,39 +163,6 @@ const actions = {
 		}
 
 	},
-
-
-	// async showAutoCompleteApiAction(companyId) {
-
-	// 	const existingData = this.dataSelectedAutoComplete.find(el => JSON.stringify(el.id) === JSON.stringify(companyId));
-
-	// 	if (existingData) {
-	// 		this.formData = existingData;
-	// 		return; // Retorna se os dados já existem
-	// 	} else {
-	// 		const endpoint = `companies/${companyId}`;
-	// 		const options = {
-	// 			headers: {
-	// 				resourceName: "company",
-	// 				permissionName: "show"
-	// 			}
-	// 		};
-
-	// 		const { data, error } = await useApi(endpoint, options);
-
-	// 		if (data) {
-	// 			this.apiErrors = {}
-	// 			this.formData = deepClone(data.data)
-	// 			this.dataSelectedAutoComplete.push(data.data)
-	// 			// const index = this.dataAutoComplete.findIndex(el => el.id === companyId)
-	// 			// this.dataAutoComplete[index] = { ...data.data }
-	// 		}
-
-	// 		else {
-	// 			this.apiErrors = error
-	// 		}
-	// 	}
-	// },
 
 
 	async updateApiAction(formData) {
@@ -221,6 +190,30 @@ const actions = {
 			// this.formData = JSON.parse(JSON.stringify(data.data))
 			this.formData = deepClone(data.data)
 			this.data[index] = { ...data.data }
+
+			// if ( this.formData.customers.length === 0 ){
+			// 	this.formData.customers = [null]
+			// }
+
+			// Se a empresa tiver dados dos clientes (repreentantes) já carrega na loja de customer para não fazer uma nova requisição
+			if (data.data.customers.length > 0) {
+
+				const customers = useCustomersStore();
+
+				// Se existe paramsData.columns, adicionar objetos não repetidos do array data.data no array this.data
+				data.data.customers.forEach(obj => {
+					// Verifica se um objeto com o mesmo id já existe em customers.dataAutoComplete
+					const exists = customers.data.some(existingObj => existingObj.id === obj.id);
+
+					// Se o objeto não existe, adiciona-o ao array
+					if (!exists) {
+						customers.data.push(obj);
+					}
+				});
+			} else {
+				this.formData.customers = [null]
+			}
+			this.legalRepresentatives = data.data.customers
 		}
 
 		else {

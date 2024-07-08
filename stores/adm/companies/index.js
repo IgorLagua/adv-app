@@ -6,9 +6,11 @@ export const useCompaniesStore = defineStore('companies', {
 	state: () => ({
 
 		openModalForm: false,
-		isLoading: false,
+		// isLoading: false,
 
 		formData: {},
+
+		legalRepresentatives: [],	// Quando carrega a empresa via Show, create ou update. Carega os valores dos representantes legais nessa variavel
 
 		totalItems: 0,
 

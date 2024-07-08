@@ -82,7 +82,11 @@
             </v-data-table-server>
         </v-card>
 
-        <AdmCompaniesForm v-if="companies.openModalForm" :title="title" />
+        <AdmCompaniesForm 
+			v-if="companies.openModalForm" 
+			:title="title" 
+			:companyId="companyId"
+		/>
 
         <AdmCommonDialogDeleteItem
             v-if="common.showDialogDelete"
@@ -122,48 +126,22 @@ const itemsPerPageOptions = [
 ];
 
 const title = ref(null);
-async function openForm(type, id) {
-    isLoading.value = true;
+const companyId = ref(null);
+function openForm(type, id) {
+    // isLoading.value = true;
     companies.formData = {};
     companies.formData.address = {};
-    const paramsData = {
-        page: 1,
-        itemsPerPage: 10,
-    };
-    await customers.indexApiAction(paramsData);
     if (type === "store") {
         title.value = "Cadastro Empresa";
     } else if (type === "update") {
         title.value = "Editar Empresa";
-        showItem(id);
+        // showItem(id);
     }
-
-    companies.openModalForm = true;
-    isLoading.value = false;
+	companyId.value = id;
+	companies.openModalForm = true;
+    
 }
 
-async function showItem(id) {
-    companies.isLoading = true;
-    // await sleep(3000)
-    await companies.showApiAction(id);
-
-    const customerId = companies.formData.customerId;
-
-    // Verifica se a empresa tem customerId
-    // E se existe customerId em customers.data
-    // Se não existe faz uma requisição para API e insere o retorno no customers.data
-    if (customerId) {
-        const exists = customers.data.some(
-            (customer) => customer.id === customerId
-        );
-
-        if (!exists) {
-            await customers.showApiAction(customerId);
-            customers.data.push(customers.formData);
-        }
-    }
-    companies.isLoading = false;
-}
 
 const isLoading = ref(false);
 const search = ref("");
@@ -177,6 +155,7 @@ async function loadItems({ page, itemsPerPage, sortBy }) {
         itemsPerPage,
         sortBy,
         search: searchTable.value ? searchTable.value : [],
+		columns: "id,corporateName,cnpj,phones,email",
     };
     await companies.indexApiAction(paramsData);
     isLoading.value = false;
