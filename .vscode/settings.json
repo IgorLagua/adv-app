@@ -1,4 +1,11 @@
 {
 	"nuxt.isNuxtApp": false,
-	"vetur.format.options.tabSize": 4
+	"vetur.format.options.tabSize": 4,
+	"editor.accessibilityPageSize": 10,
+	"editor.tabSize": 4,
+	"editor.foldingMaximumRegions": 5000,
+	"json.format.keepLines": false,
+	"vetur.format.defaultFormatter.js": "vscode-typescript",
+	"workbench.editor.tabSizingFixedMaxWidth": 160,
+	"workbench.editor.tabSizingFixedMinWidth": 50
 }

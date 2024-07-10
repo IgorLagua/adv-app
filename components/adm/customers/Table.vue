@@ -47,6 +47,24 @@
                 </template>
                 
                 <template v-slot:item.actions="{ item }">
+
+					<v-tooltip
+                        text="Visualizar"
+                        location="top"
+                        v-if="hasPermission('customer', 'show')"
+                    >
+                        <template v-slot:activator="{ props }">
+                            <!-- <pre>{{ item }}</pre> -->
+                            <v-icon
+                                v-bind="props"
+                                icon="mdi-file-eye-outline"
+                                color="info"
+                                class="me-2"
+                                @click="openDetails(item.id)"
+                            ></v-icon>
+                        </template>
+                    </v-tooltip>
+
                     <v-tooltip
                         text="Editar"
                         location="top"
@@ -83,6 +101,11 @@
         </v-card>
 
         <AdmCustomersForm v-if="customers.openModalForm" :title="title" />
+        <AdmCustomersDetails 
+			v-if="openModalDetails" 
+			v-model="openModalDetails"
+			:customerId="customerId"
+		/>
 
         <AdmCommonDialogDeleteItem
             v-if="common.showDialogDelete"
@@ -131,6 +154,14 @@ function openForm(type, id) {
     }
 
     customers.openModalForm = true;
+}
+
+
+const openModalDetails = ref(false);
+const customerId = ref(null);
+function openDetails(id) {
+    customerId.value = id;
+    openModalDetails.value = true;
 }
 
 async function showItem(id) {

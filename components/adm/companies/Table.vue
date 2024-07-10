@@ -47,6 +47,24 @@
                 </template>
 
                 <template v-slot:item.actions="{ item }">
+
+					<v-tooltip
+                        text="Visualizar"
+                        location="top"
+                        v-if="hasPermission('company', 'show')"
+                    >
+                        <template v-slot:activator="{ props }">
+                            <!-- <pre>{{ item }}</pre> -->
+                            <v-icon
+                                v-bind="props"
+                                icon="mdi-file-eye-outline"
+                                color="info"
+                                class="me-2"
+                                @click="openDetails(item.id)"
+                            ></v-icon>
+                        </template>
+                    </v-tooltip>
+
                     <v-tooltip
                         text="Editar"
                         location="top"
@@ -85,6 +103,12 @@
         <AdmCompaniesForm 
 			v-if="companies.openModalForm" 
 			:title="title" 
+			:companyId="companyId"
+		/>
+
+		<AdmCompaniesDetails 
+			v-if="openModalDetails" 
+			v-model="openModalDetails"
 			:companyId="companyId"
 		/>
 
@@ -140,6 +164,12 @@ function openForm(type, id) {
 	companyId.value = id;
 	companies.openModalForm = true;
     
+}
+
+const openModalDetails = ref(false);
+function openDetails(id) {
+    companyId.value = id;
+    openModalDetails.value = true;
 }
 
 
