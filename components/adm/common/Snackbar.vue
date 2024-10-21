@@ -1,8 +1,19 @@
 <template>
     <div class="text-center">
         <v-hover @update:modelValue="updateHover" v-slot="{ props }">
-            <v-snackbar v-model="currentValue" :color="color" :location="location" :timeout="timeout" v-bind="props">
-                <v-progress-linear absolute v-model="progress" color="" height="10"></v-progress-linear>
+            <v-snackbar
+                v-model="currentValue"
+                :color="color"
+                :location="location"
+                :timeout="timeout"
+                v-bind="props"
+            >
+                <v-progress-linear
+                    absolute
+                    v-model="progress"
+                    color=""
+                    height="10"
+                ></v-progress-linear>
                 <h2 class="py-4">{{ title }}</h2>
                 <p>{{ subTitle }}</p>
                 <template v-slot:actions>

@@ -147,14 +147,17 @@ import { useAddressesStore } from "~/stores/adm/addresses";
 import { usePhonesStore } from "~/stores/adm/phones";
 import { useCnpjStore } from "~/stores/cnpj";
 import { useZipCodeStore } from "~/stores/zipCode";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
 
 const companies = useCompaniesStore();
 const addresses = useAddressesStore();
 const phones = usePhonesStore();
 const cnpj = useCnpjStore();
 const zipCode = useZipCodeStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const { updateErrorMessages } = useApiErrorMessages();
 
@@ -362,7 +365,8 @@ async function saveButton() {
                     formatTextToFirstUpperCase(cnpj.formData.municipio);
                 }
             }
-            callSnackbar(companies.formData.corporateName);
+            // callSnackbar(companies.formData.corporateName);
+			notification.setNotification('green', companies.formData.corporateName, 'Cadastrado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
             nextButton();
         }
     }
@@ -375,7 +379,7 @@ async function saveButton() {
         formData = companies.formData.address;
 
         formData.id = companies.formData.id; //pega o ultimo cliente cadastrado e insere no formData
-        formData.type = "company";
+        formData.type = "companies";
         await addresses.storeApiAction(formData);
 
         // Verifica se existem erros de API retornados.
@@ -383,7 +387,9 @@ async function saveButton() {
             // Mapeia os erros da API para os campos do formulário.
             updateErrorMessages(addresses.apiErrors, addressDataRequired.value);
         } else {
-            callSnackbar("Endereço");
+            // callSnackbar("Endereço");
+			notification.setNotification('green', 'Endereço', 'Cadastrado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
             nextButton();
         }
         isLoading.value = false;
@@ -421,7 +427,9 @@ async function saveButton() {
             // Mapeia os erros da API para os campos do formulário.
             updateErrorMessages(phones.apiErrors, phones.fieldConfig);
         } else {
-            callSnackbar("Telefones");
+            // callSnackbar("Telefones");
+			notification.setNotification('green', 'Telefones', 'Cadastrado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
             nextButton();
         }
         isLoading.value = false;
@@ -437,7 +445,8 @@ async function saveButton() {
             // Mapeia os erros da API para os campos do formulário.
             updateErrorMessages(companies.apiErrors, companyDataOptional.value);
         } else {
-            callSnackbar("Dados opcionais");
+            // callSnackbar("Dados opcionais");
+			notification.setNotification('green', 'Dados opcionais', 'Cadastrado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
         }
         isLoading.value = false;
     }
@@ -640,12 +649,12 @@ async function nextButton() {
     }
 }
 
-function callSnackbar(title) {
-    snackbar.show = true;
-    snackbar.title = title;
-    snackbar.subTitle = "Cadastrado com sucesso";
-    snackbar.color = "green";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar(title) {
+//     snackbar.show = true;
+//     snackbar.title = title;
+//     snackbar.subTitle = "Cadastrado com sucesso";
+//     snackbar.color = "green";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>

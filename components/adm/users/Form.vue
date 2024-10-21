@@ -53,10 +53,12 @@
 
 <script setup>
 import { useUsersStore } from "~/stores/adm/users";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
 
 const users = useUsersStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
 
 const { updateErrorMessages } = useApiErrorMessages();
 
@@ -81,7 +83,8 @@ async function saveButton() {
             await users.storeApiAction({ ...users.formData });
 
             if (Object.keys(users.apiErrors).length === 0) {
-                callSnackbar("Criado com sucesso");
+                // callSnackbar("Criado com sucesso");
+				notification.setNotification('green', users.formData.name, 'Cadastrado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
             } else {
                 // Se existe erro no retorno da API
                 // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -95,7 +98,8 @@ async function saveButton() {
             });
 
             if (Object.keys(users.apiErrors).length === 0) {
-                callSnackbar("Modificado com sucesso");
+                // callSnackbar("Modificado com sucesso");
+				notification.setNotification('green', users.formData.name, 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
             } else {
                 // se existe erro no retorno da API
                 // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -112,17 +116,22 @@ async function saveButton() {
     }
 }
 
+// onMounted(()=>{
+// 	notification.setNotification('red', users.formData.name, 'Modificado com sucesso', 6000, 'mdi-checkbox-marked-circle-outline');
+
+// })
+
 function clearForm() {
     users.formData = {};
 }
 
-function callSnackbar(subTitle) {
-    snackbar.show = true;
-    snackbar.title = users.formData.name;
-    snackbar.subTitle = subTitle;
-    snackbar.color = "green";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar(subTitle) {
+//     snackbar.show = true;
+//     snackbar.title = users.formData.name;
+//     snackbar.subTitle = subTitle;
+//     snackbar.color = "green";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
 

@@ -123,14 +123,18 @@
 
 <script setup>
 import { useCompaniesStore } from "~/stores/adm/companies";
-import { useCustomersStore } from "~/stores/adm/customers";
+// import { useCustomersStore } from "~/stores/adm/customers";
 import { useCommonStore } from "~/stores/common";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const companies = useCompaniesStore();
-const customers = useCustomersStore();
+// const customers = useCustomersStore();
 const common = useCommonStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const itemsPerPage = ref(10);
 
@@ -205,17 +209,19 @@ async function deleteItem() {
     isLoading.value = true;
     await companies.destroyApiAction(itemSelected.value.id);
     isLoading.value = false;
-    callSnackbar();
+    // callSnackbar();
+	notification.setNotification('red', itemSelected.value.corporateName, 'Apagado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
 }
 
-function callSnackbar() {
-    snackbar.show = true;
-    snackbar.title = itemSelected.value.corporateName;
-    snackbar.subTitle = "Apagado com sucesso";
-    snackbar.color = "red";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar() {
+//     snackbar.show = true;
+//     snackbar.title = itemSelected.value.corporateName;
+//     snackbar.subTitle = "Apagado com sucesso";
+//     snackbar.color = "red";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
 
 

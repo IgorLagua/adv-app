@@ -67,6 +67,13 @@ export default defineNuxtConfig({
 					hideDetails: "auto",
 					rows: "2"
 				},
+				VFileInput: {
+					variant: "outlined",
+					color: "primary",
+					density: "compact",
+					clearable: true,
+					hideDetails: "auto"
+				},
 				VDataTableFooter: {
 					VSelect: {
 						clearable: false,

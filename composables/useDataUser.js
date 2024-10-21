@@ -52,6 +52,18 @@ export function userFieldsRequired() {
 			],
 			key: "password",
 		},
+		// {
+		// 	cols: 12,
+		// 	type: "file",
+		// 	label: "Imagem de perfil",
+		// 	errorMensages: null,
+		// 	rules: [
+		// 		value => {
+		// 			return !value || !value.length || value[0].size < 2000000 || 'O tamanho da imagem deve ser inferior a 2 MB!'
+		// 		},
+		// 	],
+		// 	key: "file",
+		// },
 	];
 
 }

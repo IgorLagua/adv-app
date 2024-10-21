@@ -58,10 +58,14 @@
 
 <script setup>
 import { useResourcesStore } from "~/stores/adm/resources";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const resources = useResourcesStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const isLoading = ref(false);
 
@@ -86,7 +90,9 @@ async function saveButton() {
             });
 
             if (Object.keys(resources.apiErrors).length === 0) {
-                callSnackbar("Criado com sucesso");
+                // callSnackbar("Criado com sucesso");
+				notification.setNotification('green', resources.formData.name, 'Criado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
             }
 
             else {
@@ -102,7 +108,9 @@ async function saveButton() {
             });
 
             if (Object.keys(resources.apiErrors).length === 0) {
-                callSnackbar("Modificado com sucesso");
+                // callSnackbar("Modificado com sucesso");
+				notification.setNotification('green', resources.formData.name, 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
             } else {
                 // se existe erro no retorno da API
                 // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -123,13 +131,13 @@ function clearForm() {
     resources.formData = {};
 }
 
-function callSnackbar(subTitle) {
-    snackbar.show = true;
-    snackbar.title = resources.formData.name;
-    snackbar.subTitle = subTitle;
-    snackbar.color = "green";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar(subTitle) {
+//     snackbar.show = true;
+//     snackbar.title = resources.formData.name;
+//     snackbar.subTitle = subTitle;
+//     snackbar.color = "green";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
 

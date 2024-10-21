@@ -79,8 +79,17 @@
             @click:append-inner="showPassword = !showPassword"
             v-model="currentValue"
             :rules="data.rules"
-			:error-messages="data.errorMensages"
+            :error-messages="data.errorMensages"
         ></v-text-field>
+
+        <v-file-input
+			v-if="data.type === 'file'"
+            :label="data.label"
+            prepend-inner-icon="mdi-camera"
+			v-model="currentValue"
+			:rules="data.rules"
+            :error-messages="data.errorMensages"
+        ></v-file-input>
     </div>
 </template>
   

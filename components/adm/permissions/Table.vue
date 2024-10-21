@@ -71,7 +71,7 @@
         </v-card>
 
         <AdmPermissionsForm
-			v-if="openModalForm"
+            v-if="openModalForm"
             v-model="openModalForm"
             :title="title"
         />
@@ -81,7 +81,6 @@
             :name="itemSelected.name"
             @update="deleteItem"
         ></AdmCommonDialogDeleteItem>
-
     </div>
 </template>
 
@@ -89,18 +88,22 @@
 <script setup>
 import { usePermissionsStore } from "~/stores/adm/permissions";
 import { useCommonStore } from "~/stores/common";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const permissions = usePermissionsStore();
 const common = useCommonStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const itemsPerPage = ref(10);
 
 const headers = [
     { title: "ID", key: "id" },
     { title: "Nome", key: "name" },
-	{ title: "Descrição", key: "description" },
+    { title: "Descrição", key: "description" },
     { title: "Ações", align: "center", sortable: false, key: "actions" },
 ];
 
@@ -142,7 +145,7 @@ function openForm(type, itens) {
     permissions.editForm = false;
 
     if (type === "store") {
-		permissions.storeForm = true;
+        permissions.storeForm = true;
         title.value = "Cadastro Permissão";
     } else if (type === "update") {
         title.value = "Editar Permissão";
@@ -161,18 +164,20 @@ function confirmDeleteItem(item) {
 async function deleteItem() {
     isLoading.value = true;
     await permissions.destroyApiAction(itemSelected.value.id);
-	callSnackbar();
+    // callSnackbar();
+    notification.setNotification('red', itemSelected.value.name, 'Apagado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
     isLoading.value = false;
 }
 
-function callSnackbar() {
-    snackbar.show = true;
-    snackbar.title = itemSelected.value.name;
-    snackbar.subTitle = "Apagado com sucesso";
-    snackbar.color = "red";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar() {
+//     snackbar.show = true;
+//     snackbar.title = itemSelected.value.name;
+//     snackbar.subTitle = "Apagado com sucesso";
+//     snackbar.color = "red";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
 
 

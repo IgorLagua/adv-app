@@ -12,11 +12,11 @@ export async function useApi(endpoint, options = {}) {
 
 	// Configurações padrão para o useFetch
 	const defaultOptions = {
-		// baseUrl: 'http://localhost/api/v1/', // Valor padrão para baseUrl
-		baseUrl: 'https://api.iasapp.com.br/api/v1/', // Valor padrão para baseUrl
+		baseUrl: 'http://localhost/api/v1/', // Valor padrão para baseUrl
+		// baseUrl: 'https://api.iasapp.com.br/api/v1/', // Valor padrão para baseUrl
 		method: 'GET', // Por padrão, o método será GET
 		headers: {
-			'Content-Type': 'application/json',
+			// 'Content-Type': 'application/json',
 			'Accept': 'application/json',
 			'Authorization': authentication.token ? `Bearer ${authentication.token}` : null,
 			...(authentication.tenants?.length > 1 && { 'tenantIds': authentication.tenantIds }),
@@ -24,9 +24,11 @@ export async function useApi(endpoint, options = {}) {
 	};
 
 	const mergeOptions = deepMerge(defaultOptions, options);
+	// console.log('mergeOptions', mergeOptions);
 
 	// Preparar a URL com os parâmetros de query
 	let url = new URL(endpoint, mergeOptions.baseUrl);
+	// console.log('url.href', url.href);
 
 	try {
 		// Tente fazer a chamada com $fetch
@@ -36,7 +38,8 @@ export async function useApi(endpoint, options = {}) {
 		// console.log('Dados recebidos:', data);
 	} catch (errors) {
 
-		// console.log('errors', errors.response);
+		// console.log('errors1', errors);
+
 
 		// Verifica se a resposta está disponível e é um erro 422
 		// if (errors.response && errors.response.status === 422) {
@@ -44,14 +47,24 @@ export async function useApi(endpoint, options = {}) {
 		// 	errorValue = errors.response._data
 		// 	// console.log('Erro 422: Dados inválidos fornecidos.', errors.response._data);
 		// } else {
-		error = errors.response._data
+		// error = errors.response._data
 		// Trate outros erros
 		// console.log('Erro ao fazer a requisição:', errors);
 		// }
 
-		if ( error ) {
-			errorsApi(error)	//Chama a função errorsApi e passa como parâmetro "error" em utils
+		// Verifique se errors.response existe
+		if (errors.response && errors.response._data) {
+			error = errors.response._data;
+		} else {
+			// Para erros de rede ou outros tipos de erros
+			error = {
+				message: errors.message || 'Erro de Rede',
+			};
 		}
+
+		// if (error) {
+		errorsApi(error)	//Chama a função errorsApi e passa como parâmetro "error" em utils
+		// }
 
 
 		// if (error.message === 'Unauthenticated.') {

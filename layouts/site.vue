@@ -58,14 +58,19 @@
         <v-main class="bg-grey-lighten-3">
             <!-- <v-container> -->
             <slot />
+
+			<AdmCommonDialogErrors v-model="common.showDialogErrorApi" />
             <!-- </v-container> -->
         </v-main>
     </v-app>
 </template>
   
 <script setup>
+import { useCommonStore } from "~/stores/common";
+const common = useCommonStore();
+
+
 const tab = ref(null);
-const teste = ref(null);
 
 const items = [
     //     {

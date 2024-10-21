@@ -32,7 +32,7 @@
 			</v-list-item>
 		</v-list>
 
-		<AdmCommonSnackbar
+		<!-- <AdmCommonSnackbar
             v-if="showSnackbar"
             v-model="showSnackbar"
             :title="titleSnackbar"
@@ -40,7 +40,7 @@
             :color="'green'"
             :timeout="4000"
             :icon="'mdi-spellcheck'"
-        ></AdmCommonSnackbar>
+        ></AdmCommonSnackbar> -->
 
 	</div>
 	
@@ -48,6 +48,10 @@
 
 
 <script setup>
+import { useNotificationStore } from "~/stores/notification";
+const notification = useNotificationStore();
+
+
 
 const props = defineProps({
 	itemSelected: { type: Object, required: true },
@@ -56,15 +60,17 @@ const props = defineProps({
 // const emit = defineEmits(["update"]);
 
 
-const showSnackbar = ref(false);
-const titleSnackbar = ref(null);
+// const showSnackbar = ref(false);
+// const titleSnackbar = ref(null);
 const copyToClipboard = (text) => {
-    showSnackbar.value = false;
-    titleSnackbar.value = text;
+    // showSnackbar.value = false;
+    // titleSnackbar.value = text;
     navigator.clipboard
         .writeText(text)
         .then(() => {
-            showSnackbar.value = true;
+            // showSnackbar.value = true;
+			notification.setNotification('green', text, 'Copiado com sucesso', 4000, 'mdi-spellcheck');
+
             // console.log('Texto copiado para a área de transferência!');
         })
         .catch((err) => {

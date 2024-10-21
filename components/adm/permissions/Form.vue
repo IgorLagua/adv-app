@@ -58,10 +58,14 @@
 
 <script setup>
 import { usePermissionsStore } from "~/stores/adm/permissions";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const permissions = usePermissionsStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const isLoading = ref(false);
 
@@ -86,7 +90,9 @@ async function saveButton() {
             });
 
             if (Object.keys(permissions.apiErrors).length === 0) {
-                callSnackbar("Criado com sucesso");
+                // callSnackbar("Criado com sucesso");
+				notification.setNotification('red', 'Criado com sucesso', 'Apagado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
             } 
 			
 			else {
@@ -102,7 +108,9 @@ async function saveButton() {
             });
 
             if (Object.keys(permissions.apiErrors).length === 0) {
-                callSnackbar("Modificado com sucesso");
+                // callSnackbar("Modificado com sucesso");
+				notification.setNotification('red', 'Modificado com sucesso', 'Apagado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
             } 
 			
 			else {
@@ -125,14 +133,14 @@ function clearForm() {
     permissions.formData = {};
 }
 
-function callSnackbar(subTitle) {
-    snackbar.show = true;
-    snackbar.title = permissions.formData.name;
-    snackbar.subTitle = subTitle;
-    snackbar.color = "green";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar(subTitle) {
+//     snackbar.show = true;
+//     snackbar.title = permissions.formData.name;
+//     snackbar.subTitle = subTitle;
+//     snackbar.color = "green";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 
 </script>
 

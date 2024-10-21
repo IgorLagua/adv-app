@@ -66,12 +66,16 @@
 import { useResourcesStore } from "~/stores/adm/resources";
 import { usePermissionsStore } from "~/stores/adm/permissions";
 import { useResourcesPermissionsStore } from "~/stores/adm/resourcesPermissions";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const resources = useResourcesStore();
 const permissions = usePermissionsStore();
 const resourcesPermissions = useResourcesPermissionsStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const headers = computed(() => [
     { title: "Recursos", value: "description" },
@@ -123,18 +127,20 @@ async function saveButton() {
     // console.log('formData.value', formData.value);
     await resourcesPermissions.storeApiAction(formData.value);
     // await sleep(1000)
-    callSnackbar();
+    // callSnackbar();
+	notification.setNotification('green', props.userData.name, 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
     isLoadingSaveButton.value = false;
     openModalAuthorization.value = false;
 }
 
-function callSnackbar() {
-    snackbar.show = true
-    snackbar.title = props.userData.name
-    snackbar.subTitle = "Modificado com sucesso"
-    snackbar.color = "green"
-    snackbar.timeout = 5000
-    snackbar.icon = "mdi-checkbox-marked-circle-outline"
-}
+// function callSnackbar() {
+//     snackbar.show = true
+//     snackbar.title = props.userData.name
+//     snackbar.subTitle = "Modificado com sucesso"
+//     snackbar.color = "green"
+//     snackbar.timeout = 5000
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline"
+// }
 </script>
 

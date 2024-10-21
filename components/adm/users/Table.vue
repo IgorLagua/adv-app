@@ -104,11 +104,15 @@
 <script setup>
 import { useUsersStore } from "~/stores/adm/users";
 import { useCommonStore } from "~/stores/common";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const users = useUsersStore();
 const common = useCommonStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const itemsPerPage = ref(10);
 
@@ -193,19 +197,19 @@ async function deleteItem() {
 
     await users.destroyApiAction(itemSelected.value.id);
 
-    callSnackbar();
-
+    // callSnackbar();
+	notification.setNotification('red', itemSelected.value.name, 'Apagado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
     isLoading.value = false;
 }
 
-function callSnackbar() {
-    snackbar.show = true;
-    snackbar.title = itemSelected.value.name;
-    snackbar.subTitle = "Apagado com sucesso";
-    snackbar.color = "red";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar() {
+//     snackbar.show = true;
+//     snackbar.title = itemSelected.value.name;
+//     snackbar.subTitle = "Apagado com sucesso";
+//     snackbar.color = "red";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
 
 

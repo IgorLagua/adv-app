@@ -45,13 +45,17 @@
 import { useTemplatesStore } from "~/stores/adm/templates";
 import { useTemplatesCategoriesStore } from "~/stores/adm/templatesCategories";
 import { useTemplatesFilesStore } from "~/stores/adm/templatesFiles";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 
 const templates = useTemplatesStore();
 const templatesCategories = useTemplatesCategoriesStore();
 const templatesFiles = useTemplatesFilesStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 
 const isLoading = ref(false);
@@ -103,7 +107,9 @@ async function saveButton() {
                 });
 
                 if (Object.keys(templatesCategories.apiErrors).length === 0) {
-					callSnackbar("Criado com sucesso")
+					// callSnackbar("Criado com sucesso")
+					notification.setNotification('green', templates.formData.name, 'Criado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
                 } else {
                     // Se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -122,7 +128,9 @@ async function saveButton() {
                 });
 
                 if (Object.keys(templatesFiles.apiErrors).length === 0) {
-					callSnackbar("Criado com sucesso")
+					// callSnackbar("Criado com sucesso")
+					notification.setNotification('green', templates.formData.name, 'Criado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
                 } else {
                     // Se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -138,7 +146,9 @@ async function saveButton() {
                 });
 
                 if (Object.keys(templatesCategories.apiErrors).length === 0) {
-					callSnackbar("Modificado com sucesso")
+					// callSnackbar("Modificado com sucesso")
+					notification.setNotification('green', templates.formData.name, 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
                 } else {
                     // se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -157,7 +167,9 @@ async function saveButton() {
                 }, "update");
 
                 if (Object.keys(templatesFiles.apiErrors).length === 0) {
-					callSnackbar("Modificado com sucesso")
+					// callSnackbar("Modificado com sucesso")
+					notification.setNotification('green', templates.formData.name, 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
                 } else {
                     // se existe erro no retorno da API
                     // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -240,13 +252,13 @@ function closeForm() {
     templates.openModalForm = false;
 }
 
-function callSnackbar(subTitle) {
-    snackbar.show = true;
-    snackbar.title = templates.formData.name;
-    snackbar.subTitle = subTitle;
-    snackbar.color = "green";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar(subTitle) {
+//     snackbar.show = true;
+//     snackbar.title = templates.formData.name;
+//     snackbar.subTitle = subTitle;
+//     snackbar.color = "green";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
 

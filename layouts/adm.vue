@@ -43,29 +43,39 @@
             <AdmCommonDialogErrors v-model="common.showDialogErrorApi" />
 
             <AdmCommonSnackbar
-                v-if="snackbar.show"
-                v-model="snackbar.show"
-                :title="snackbar.title"
-                :subTitle="snackbar.subTitle"
-                :color="snackbar.color"
-                :timeout="snackbar.timeout"
-                :icon="snackbar.icon"
+                v-if="notification.show"
+                v-model="notification.show"
+                :title="notification.title"
+                :subTitle="notification.subTitle"
+                :color="notification.color"
+                :timeout="notification.timeout"
+                :icon="notification.icon"
             ></AdmCommonSnackbar>
+
         </v-main>
+        
     </v-layout>
 </template>
 
 <script setup>
 import { useAuthenticationStore } from "~/stores/site/authentication";
 import { useCommonStore } from "~/stores/common";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const authentication = useAuthenticationStore();
 const common = useCommonStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
+
+// const notification = useSnackbarStore();
 
 const drawer = ref(true);
 
 
 </script>
+
+
 

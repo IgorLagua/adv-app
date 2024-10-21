@@ -97,13 +97,17 @@ import { useTemplatesStore } from "~/stores/adm/templates";
 import { useTemplatesCategoriesStore } from "~/stores/adm/templatesCategories";
 import { useTemplatesFilesStore } from "~/stores/adm/templatesFiles";
 import { useCommonStore } from "~/stores/common";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const templates = useTemplatesStore();
 const templatesCategories = useTemplatesCategoriesStore();
 const templatesFiles = useTemplatesFilesStore();
 const common = useCommonStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
+
 
 const itemsPerPage = ref(5);
 const isLoading = ref(false);
@@ -221,17 +225,18 @@ async function deleteItem() {
         await templatesFiles.destroyApiAction(itemDelete.value.id);
     }
 
-    callSnackbar();
+    // callSnackbar();
+	notification.setNotification('red', itemDelete.value.name, 'Apagado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
 
     isLoading.value = false;
 }
 
-function callSnackbar() {
-    snackbar.show = true;
-    snackbar.title = itemDelete.value.name;
-    snackbar.subTitle = "Apagado com sucesso";
-    snackbar.color = "red";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar() {
+//     snackbar.show = true;
+//     snackbar.title = itemDelete.value.name;
+//     snackbar.subTitle = "Apagado com sucesso";
+//     snackbar.color = "red";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>

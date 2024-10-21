@@ -3,10 +3,22 @@
     <div>
         <v-list>
             <v-row class="mt-1 mb-1">
-                    <!-- prepend-avatar="https://cdn.vuetifyjs.com/images/john.png" -->
+                
+				
+
+                <!-- <v-img
+                    :width="300"
+                    aspect-ratio="16/9"
+                    cover
+                    :src="blobUrl"
+                ></v-img> -->
+
                 <v-list-item
                     :title="authentication.user?.name"
-                    :subtitle="authentication.user?.isAdmin ? 'Administrador' : null"
+                    :subtitle="
+                        authentication.user?.isAdmin ? 'Administrador' : null
+                    "
+                    :prepend-avatar="filesImagesProfiles.formData"
                 >
                     <template v-slot:append>
                         <v-menu>
@@ -47,18 +59,18 @@
             </v-row>
         </v-list>
 
-        <AdmLayoutsMenuLoggedUserProfile
-            v-model="dialog"
-        />
+        <AdmLayoutsMenuLoggedUserProfile v-model="dialog" />
     </div>
 </template>
 
 
 <script setup>
 import { useUsersStore } from "~/stores/adm/users";
+import { useFilesImagesProfilesStore } from "~/stores/adm/filesImagesProfiles";
 import { useAuthenticationStore } from "~/stores/site/authentication";
 
 const user = useUsersStore();
+const filesImagesProfiles = useFilesImagesProfilesStore();
 const authentication = useAuthenticationStore();
 
 // const user = [
@@ -72,15 +84,24 @@ const dialog = shallowRef(false);
 // const router = useRouter();
 
 function openForm() {
-    user.formData = {...authentication.user};
+    user.formData = { ...authentication.user };
     dialog.value = true;
 }
 
+async function changeImage() {
+
+    await filesImagesProfiles.showApiAction(authentication.user.files[0].id);
+    // console.log('filesImagesProfiles.formData', filesImagesProfiles.formData);
+}
+changeImage()
+
+
+
 async function logOut() {
-	authentication.logoutIsLoading = true
+    authentication.logoutIsLoading = true
     await authentication.logOutAction();
-// await sleep(3000)
-	navigateTo("/site/login");
-	authentication.logoutIsLoading = false
+    // await sleep(3000)
+    navigateTo("/site/login");
+    authentication.logoutIsLoading = false
 }
 </script>

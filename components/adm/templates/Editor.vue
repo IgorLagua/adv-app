@@ -37,7 +37,7 @@
             >Imprimir</v-btn
         >
 
-        <AdmCommonSnackbar
+        <!-- <AdmCommonSnackbar
             v-if="showSnackbar"
             v-model="showSnackbar"
             :title="templatesFiles.selected.name"
@@ -45,7 +45,7 @@
             color="green"
             :timeout="4000"
             icon="mdi-spellcheck"
-        ></AdmCommonSnackbar>
+        ></AdmCommonSnackbar> -->
     </div>
 </template>
 
@@ -54,9 +54,13 @@
 import Editor from "@tinymce/tinymce-vue";
 import { useTemplatesStore } from "~/stores/adm/templates";
 import { useTemplatesFilesStore } from "~/stores/adm/templatesFiles";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const templates = useTemplatesStore();
 const templatesFiles = useTemplatesFilesStore();
+const notification = useNotificationStore();
+
 const editorInstance = ref(null);
 
 const editorConfig = ref({
@@ -148,7 +152,9 @@ async function saveButton() {
     await templatesFiles.updateApiAction(templatesFiles.selected, 'store');
 
     if (Object.keys(templatesFiles.apiErrors).length === 0) {
-        updateSnackbar();
+        // updateSnackbar();
+		notification.setNotification('green', templatesFiles.selected.name, 'Cadastrado com sucesso', 5000, 'mdi-spellcheck');
+
     } else {
         // Se existe erro no retorno da API
         // Atualizar mensagens de erro nos inputs com base nos erros da API
@@ -199,8 +205,8 @@ function printContent() {
     }, 250);
 }
 
-const showSnackbar = ref(false);
-function updateSnackbar() {
-    showSnackbar.value = true;
-}
+// const showSnackbar = ref(false);
+// function updateSnackbar() {
+//     showSnackbar.value = true;
+// }
 </script>

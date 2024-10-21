@@ -176,14 +176,17 @@ import { useClassEntitiesStore } from "~/stores/adm/classEntities";
 import { useAddressesStore } from "~/stores/adm/addresses";
 import { usePhonesStore } from "~/stores/adm/phones";
 import { useZipCodeStore } from "~/stores/zipCode";
-import { useSnackbarStore } from "~/stores/snackbar";
+// import { useSnackbarStore } from "~/stores/snackbar";
+import { useNotificationStore } from "~/stores/notification";
+
 
 const customers = useCustomersStore();
 const classEntities = useClassEntitiesStore();
 const addresses = useAddressesStore();
 const phones = usePhonesStore();
 const zipCode = useZipCodeStore();
-const snackbar = useSnackbarStore();
+// const snackbar = useSnackbarStore();
+const notification = useNotificationStore();
 
 const { updateErrorMessages } = useApiErrorMessages();
 
@@ -325,7 +328,8 @@ async function saveButton() {
                 customerDataRequired.value
             );
         } else {
-            callSnackbar(customers.formData.name);
+            // callSnackbar(customers.formData.name);
+			notification.setNotification('green', customers.formData.name, 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
 			nextButton()
         }
 
@@ -340,7 +344,7 @@ async function saveButton() {
         formData = customers.formData.address;
 
         formData.id = customers.formData.id; //pega o ultimo cliente cadastrado e insere no formData
-        formData.type = "customer";
+        formData.type = "customers";
 
         await addresses.storeApiAction(formData);
 
@@ -349,7 +353,8 @@ async function saveButton() {
             // Mapeia os erros da API para os campos do formulário.
             updateErrorMessages(addresses.apiErrors, addressDataRequired.value);
         } else {
-            callSnackbar("Endereço");
+            // callSnackbar("Endereço");
+			notification.setNotification('green', 'Endereço', 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
 			nextButton()
         }
 
@@ -387,7 +392,9 @@ async function saveButton() {
             // Mapeia os erros da API para os campos do formulário.
             updateErrorMessages(phones.apiErrors, phones.fieldConfig);
         } else {
-            callSnackbar("Telefones");
+            // callSnackbar("Telefones");
+			notification.setNotification('green', 'Telefones', 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
 			nextButton()
         }
 
@@ -455,7 +462,9 @@ async function saveButton() {
                 customerDataOptional.value
             );
         } else {
-            callSnackbar("Dados opcionais");
+            // callSnackbar("Dados opcionais");
+			notification.setNotification('green', 'Dados opcionais', 'Modificado com sucesso', 5000, 'mdi-checkbox-marked-circle-outline');
+
         }
 
         isLoading.value = false;
@@ -641,12 +650,12 @@ async function nextButton() {
 //     if (step.value > 1) step.value--;
 // }
 
-function callSnackbar(title) {
-    snackbar.show = true;
-    snackbar.title = title;
-    snackbar.subTitle = "Cadastrado com sucesso";
-    snackbar.color = "green";
-    snackbar.timeout = 5000;
-    snackbar.icon = "mdi-checkbox-marked-circle-outline";
-}
+// function callSnackbar(title) {
+//     snackbar.show = true;
+//     snackbar.title = title;
+//     snackbar.subTitle = "Cadastrado com sucesso";
+//     snackbar.color = "green";
+//     snackbar.timeout = 5000;
+//     snackbar.icon = "mdi-checkbox-marked-circle-outline";
+// }
 </script>
